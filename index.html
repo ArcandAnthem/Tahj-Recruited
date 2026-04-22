@@ -68,7 +68,7 @@
       box-shadow: var(--shadow);
       background: #000;
       position: relative;
-      height: 280px;
+      height: 220px;
     }
 
     .gallery-container {
@@ -77,19 +77,46 @@
       height: 100%;
     }
 
-    .gallery-slide {
-      min-width: 100%;
-      height: 100%;
+    .gallery-loading {
+      position: absolute;
+      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      background: linear-gradient(180deg, rgba(7, 18, 29, 0.75), rgba(7, 18, 29, 0.92));
+      z-index: 2;
+    }
+
+    .gallery-slide {
+      min-width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      padding: 8px;
       flex-shrink: 0;
+    }
+
+    .gallery-photo-frame {
+      height: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
+        #0e1a24;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .gallery-slide img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      object-position: center top;
     }
 
     .gallery-nav {
@@ -239,7 +266,7 @@
 
     .filter-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(170px, 1fr));
+      grid-template-columns: repeat(3, minmax(170px, 1fr));
       gap: 10px;
     }
 
@@ -331,6 +358,19 @@
     .mobile-row {
       color: #2d3f52;
       line-height: 1.35;
+    }
+
+    .mobile-section-title {
+      margin-top: 6px;
+      color: #5a6b7f;
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .mobile-row strong {
+      color: #17324d;
     }
 
     table {
@@ -582,6 +622,12 @@
       font-size: 0.9rem;
     }
 
+    .column-guide-section {
+      margin-top: 40px;
+      display: grid;
+      gap: 16px;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
@@ -606,7 +652,11 @@
       }
 
       .photo-gallery {
-        height: 200px;
+        height: 180px;
+      }
+
+      .gallery-slide {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .gallery-btn {
@@ -677,16 +727,6 @@
           <label for="selectivityFilter">Academic Selectivity</label>
           <select id="selectivityFilter"></select>
         </div>
-        <div class="filter-item">
-          <label for="salaryFilter">Min Salary After Graduation (USD)</label>
-          <input id="salaryFilter" type="range" min="0" max="120000" step="1000" value="0" />
-          <span id="salaryFilterVal" class="filter-note">$0+</span>
-        </div>
-        <div class="filter-item">
-          <label for="fitFilter">Min Overall Fit Score</label>
-          <input id="fitFilter" type="range" min="0" max="100" step="1" value="0" />
-          <span id="fitFilterVal" class="filter-note">0+</span>
-        </div>
       </div>
       <div class="legend">
         <span><i class="dot" style="background:#9ad9b9"></i>High fit (80+)</span>
@@ -697,24 +737,10 @@
 
     <section class="tabs" aria-label="Dashboard Sections">
       <button id="overviewTabBtn" class="tab-btn active" type="button">Overview Comparison</button>
-      <button id="devTabBtn" class="tab-btn" type="button">Playing Time + Development</button>
+      <button id="devTabBtn" class="tab-btn" type="button">School Choice Priorities</button>
     </section>
 
     <section id="overviewPanel" class="panel active">
-      <div class="column-guide">
-        <strong>Column Definitions:</strong>
-        <ul>
-          <li><strong>Overall Fit Score:</strong> Composite score (0-100) based on all school factors</li>
-          <li><strong>Black Students (# & %):</strong> Count and percentage of Black undergraduate students (latest year)</li>
-          <li><strong>Total Undergrad Population:</strong> Total number of undergraduates at the school (latest year)</li>
-          <li><strong>Avg Salary After Graduation:</strong> Average salary reported by graduates of this school</li>
-          <li><strong>Pre-Med Med-School Acceptance (%):</strong> Percentage of pre-med students accepted to medical school</li>
-          <li><strong>Conference & Region:</strong> Athletic conference and geographic region</li>
-          <li><strong>Selectivity:</strong> Academic admission selectivity level</li>
-          <li><strong>NFL Players:</strong> Number of players recruited to the NFL</li>
-          <li><strong>Bowl/Championship Appearances:</strong> Football program achievements</li>
-        </ul>
-      </div>
       <section class="table-wrap">
         <table>
           <thead>
@@ -798,19 +824,6 @@
           <p class="dev-summary" id="weightSummary"></p>
         </article>
 
-        <div class="column-guide" style="margin-top: 20px; margin-bottom: 16px;">
-          <strong>Development Score & Column Definitions:</strong>
-          <ul>
-            <li><strong>Tailored Dev Score:</strong> Composite score (0-100) calculated from your six slider weights. Adjust sliders and watch how school rankings change.</li>
-            <li><strong>Playing Time Proxy (0-100):</strong> Estimated based on roster size (smaller = more playing time) and conference strength (weaker = more opportunities).</li>
-            <li><strong>NFL Dev Proxy (0-100):</strong> Raw count of NFL players from this school, normalized to 0-100 scale.</li>
-            <li><strong>Winning Proxy (0-100):</strong> Weighted combination of bowl appearances (50%), conference titles (30%), and national championships (20%), normalized to 0-100.</li>
-            <li><strong>Academic Proxy (0-100):</strong> School's academic selectivity level (Very High = 100, High = 80, Moderate = 60, etc.), normalized to 0-100.</li>
-            <li><strong>Earnings Proxy (0-100):</strong> Average salary of graduates, normalized across all schools to 0-100 (highest salary = 100, lowest = 0).</li>
-            <li><strong>Diversity Proxy (0-100):</strong> Percentage of non-white students on campus, normalized to 0-100.</li>
-          </ul>
-        </div>
-
         <section class="table-wrap">
           <table>
             <thead>
@@ -831,6 +844,36 @@
         </section>
         <section id="devCards" class="mobile-cards"></section>
       </section>
+    </section>
+
+    <section class="column-guide-section">
+      <div class="column-guide">
+        <strong>Overview Comparison Column Definitions:</strong>
+        <ul>
+          <li><strong>Overall Fit Score:</strong> Composite score (0-100) based on all school factors.</li>
+          <li><strong>Male vs Female Ratio:</strong> The undergraduate gender ratio shown as male:female.</li>
+          <li><strong>Black Students (# & %):</strong> Count and percentage of Black undergraduate students in the latest reported year.</li>
+          <li><strong>Total Undergrad Population:</strong> Total number of undergraduate students in the latest reported year.</li>
+          <li><strong>Avg Salary After Graduation:</strong> Average salary reported by graduates of that school.</li>
+          <li><strong>Pre-Med Med-School Acceptance (%):</strong> Percentage of pre-med students accepted to medical school.</li>
+          <li><strong>Conference & Region:</strong> Athletic conference and geographic region.</li>
+          <li><strong>Selectivity:</strong> Academic admission selectivity level.</li>
+          <li><strong>NFL Players:</strong> Number of players from that school recruited to the NFL.</li>
+          <li><strong>Bowl, Conference Titles, National Titles:</strong> Football program achievements.</li>
+        </ul>
+      </div>
+      <div class="column-guide">
+        <strong>School Choice Priorities Definitions:</strong>
+        <ul>
+          <li><strong>Tailored Score:</strong> Composite score (0-100) calculated from the slider weights chosen by the student.</li>
+          <li><strong>Playing Time Proxy (0-100):</strong> Estimated from roster size and conference strength, where smaller rosters and less crowded competition increase opportunity.</li>
+          <li><strong>NFL Dev Proxy (0-100):</strong> NFL placement history, normalized to a 0-100 scale.</li>
+          <li><strong>Winning Proxy (0-100):</strong> Weighted football success from bowl appearances, conference titles, and national championships.</li>
+          <li><strong>Academic Proxy (0-100):</strong> Academic selectivity normalized to the scoring scale.</li>
+          <li><strong>Earnings Proxy (0-100):</strong> Graduate salary normalized across the school list.</li>
+          <li><strong>Diversity Proxy (0-100):</strong> Non-white student percentage normalized to the scoring scale.</li>
+        </ul>
+      </div>
     </section>
 
     <section class="references-section">
@@ -858,10 +901,6 @@
     const conferenceFilterEl = document.getElementById("conferenceFilter");
     const regionFilterEl = document.getElementById("regionFilter");
     const selectivityFilterEl = document.getElementById("selectivityFilter");
-    const salaryFilterEl = document.getElementById("salaryFilter");
-    const salaryFilterValEl = document.getElementById("salaryFilterVal");
-    const fitFilterEl = document.getElementById("fitFilter");
-    const fitFilterValEl = document.getElementById("fitFilterVal");
     const overviewTabBtn = document.getElementById("overviewTabBtn");
     const devTabBtn = document.getElementById("devTabBtn");
     const overviewPanel = document.getElementById("overviewPanel");
@@ -1014,25 +1053,6 @@
           preMedAcceptancePct: Number(school.preMedAcceptancePct ?? 0)
         };
       });
-    }
-
-    function updateFilterLabels() {
-      salaryFilterValEl.textContent = `${fmtMoney(salaryFilterEl.value)}+`;
-      fitFilterValEl.textContent = `${fitFilterEl.value}+`;
-    }
-
-    function setupSalaryBounds(data) {
-      if (!data.length) {
-        return;
-      }
-
-      const maxSalaryData = Math.max(...data.map((s) => s.avgSalaryAfterGraduationUSD));
-      const currentSalary = Number(salaryFilterEl.value || 0);
-
-      salaryFilterEl.min = "0";
-      salaryFilterEl.max = String(Math.ceil(maxSalaryData / 1000) * 1000);
-      salaryFilterEl.value = String(Math.max(0, Math.min(currentSalary, Number(salaryFilterEl.max))));
-      updateFilterLabels();
     }
 
     function fitColor(score) {
@@ -1269,9 +1289,15 @@
         .map((row, i) => `
           <article class="mobile-card">
             <div class="mobile-title">#${i + 1} ${row.school}</div>
-            <div class="mobile-row">Tailored Dev Score: ${row.score}</div>
-            <div class="mobile-row">Play ${row.play} | NFL ${row.nfl} | Win ${row.win}</div>
-            <div class="mobile-row">Academic ${row.academic} | Earnings ${row.earnings} | Diversity ${row.diversity}</div>
+            <div class="mobile-section-title">Priority Score</div>
+            <div class="mobile-row"><strong>Tailored Score:</strong> ${row.score}</div>
+            <div class="mobile-section-title">Decision Criteria Breakdown</div>
+            <div class="mobile-row"><strong>Playing Time Proxy:</strong> ${row.play}</div>
+            <div class="mobile-row"><strong>NFL Development Proxy:</strong> ${row.nfl}</div>
+            <div class="mobile-row"><strong>Winning Program Proxy:</strong> ${row.win}</div>
+            <div class="mobile-row"><strong>Academic Proxy:</strong> ${row.academic}</div>
+            <div class="mobile-row"><strong>Earnings Proxy:</strong> ${row.earnings}</div>
+            <div class="mobile-row"><strong>Diversity Proxy:</strong> ${row.diversity}</div>
           </article>
         `)
         .join("");
@@ -1350,8 +1376,6 @@
       const conferenceVal = conferenceFilterEl.value;
       const regionVal = regionFilterEl.value;
       const selectivityVal = selectivityFilterEl.value;
-      const minSalary = Number(salaryFilterEl.value || 0);
-      const minFit = Number(fitFilterEl.value || 0);
 
       return schools.filter((school) => {
         if (conferenceVal !== "All" && school.conference !== conferenceVal) {
@@ -1361,12 +1385,6 @@
           return false;
         }
         if (selectivityVal !== "All" && school.academicSelectivity !== selectivityVal) {
-          return false;
-        }
-        if (school.avgSalaryAfterGraduationUSD < minSalary) {
-          return false;
-        }
-        if (school.fitScore < minFit) {
           return false;
         }
         return true;
@@ -1454,15 +1472,43 @@
         .join("");
 
       overviewCardsEl.innerHTML = sorted
-        .map((school) => `
-          <article class="mobile-card">
-            <div class="mobile-title">${school.school}</div>
-            <div class="mobile-row">Fit: ${school.fitScore} | Salary: ${fmtMoney(school.avgSalaryAfterGraduationUSD)}</div>
-            <div class="mobile-row">Black Students: ${fmtNumber(school.blackStudentCount)} (${school.blackStudentPct.toFixed(1)}%)</div>
-            <div class="mobile-row">Pre-Med Acceptance: ${school.preMedAcceptancePct.toFixed(1)}%</div>
-            <div class="mobile-row">Undergrad (Latest): ${fmtNumber(school.undergradPopulationLatestYear)} | Year: ${school.year}</div>
-          </article>
-        `)
+        .map((school) => {
+          const ethnicityCounts = calcEthnicityCounts(
+            school.ethnicityPct,
+            school.undergradPopulation
+          );
+          const diversityNoWhite = nonWhiteDiversityPercent(school.ethnicityPct);
+
+          return `
+            <article class="mobile-card">
+              <div class="mobile-title">${school.school}</div>
+              <div class="mobile-section-title">Overview</div>
+              <div class="mobile-row"><strong>Overall Fit:</strong> ${school.fitScore} (${scoreLabel(school.fitScore)})</div>
+              <div class="mobile-row"><strong>Male vs Female Ratio:</strong> ${ratioValue(school)}</div>
+              <div class="mobile-row"><strong>Latest Year:</strong> ${school.year}</div>
+
+              <div class="mobile-section-title">Student Outcomes</div>
+              <div class="mobile-row"><strong>Avg Salary:</strong> ${fmtMoney(school.avgSalaryAfterGraduationUSD)}</div>
+              <div class="mobile-row"><strong>Pre-Med Acceptance:</strong> ${school.preMedAcceptancePct.toFixed(1)}%</div>
+              <div class="mobile-row"><strong>Total Undergrads:</strong> ${fmtNumber(school.undergradPopulationLatestYear)}</div>
+              <div class="mobile-row"><strong>Selectivity:</strong> ${school.academicSelectivity}</div>
+
+              <div class="mobile-section-title">Football Profile</div>
+              <div class="mobile-row"><strong>Conference:</strong> ${school.conference}</div>
+              <div class="mobile-row"><strong>Region:</strong> ${school.region}</div>
+              <div class="mobile-row"><strong>NFL Players Recruited:</strong> ${fmtNumber(school.nflPlayers)}</div>
+              <div class="mobile-row"><strong>Bowl Appearances:</strong> ${fmtNumber(school.bowlAppearances)}</div>
+              <div class="mobile-row"><strong>Conference Titles:</strong> ${fmtNumber(school.conferenceChampionships)}</div>
+              <div class="mobile-row"><strong>National Titles:</strong> ${fmtNumber(school.nationalChampionships)}</div>
+
+              <div class="mobile-section-title">Campus Diversity</div>
+              <div class="mobile-row"><strong>Black Students:</strong> ${fmtNumber(school.blackStudentCount)} (${school.blackStudentPct.toFixed(1)}%)</div>
+              <div class="mobile-row"><strong>Non-White Diversity:</strong> ${diversityNoWhite.toFixed(1)}%</div>
+              <div class="mobile-row"><strong>Ethnicity Count Breakdown:</strong><br>${ethnicBlockCounts(ethnicityCounts)}</div>
+              <div class="mobile-row"><strong>Ethnicity Percent Breakdown:</strong><br>${ethnicBlockPct(school.ethnicityPct)}</div>
+            </article>
+          `;
+        })
         .join("");
     }
 
@@ -1489,8 +1535,6 @@
         const rawSchools = await response.json();
         schools = computeFitScores(rawSchools);
         setupFilters(schools);
-        setupSalaryBounds(schools);
-        updateFilterLabels();
         renderAll();
 
         const stamp = new Date();
@@ -1541,24 +1585,13 @@
         }
       });
 
-      [conferenceFilterEl, regionFilterEl, selectivityFilterEl, salaryFilterEl].forEach((el) => {
+      [conferenceFilterEl, regionFilterEl, selectivityFilterEl].forEach((el) => {
         el.addEventListener("input", () => {
-          updateFilterLabels();
           renderAll();
         });
         el.addEventListener("change", () => {
-          updateFilterLabels();
           renderAll();
         });
-      });
-
-      fitFilterEl.addEventListener("input", () => {
-        updateFilterLabels();
-        renderAll();
-      });
-      fitFilterEl.addEventListener("change", () => {
-        updateFilterLabels();
-        renderAll();
       });
 
       [wPlayTimeEl, wNflDevEl, wWinningEl, wAcademicEl, wEarningsEl, wDiversityEl].forEach((el) => {
@@ -1603,6 +1636,10 @@
     const galleryNav = document.getElementById("galleryNav");
     const galPrev = document.getElementById("galPrev");
     const galNext = document.getElementById("galNext");
+    const galleryLoading = document.createElement("div");
+    galleryLoading.className = "gallery-loading";
+    galleryLoading.textContent = "Loading visit photos...";
+    document.querySelector(".photo-gallery").appendChild(galleryLoading);
 
     // List of photos from the Photos of Visits folder (all converted to JPG for web compatibility)
     const photoList = [
@@ -1617,23 +1654,70 @@
     ];
 
     let galleryIndex = 0;
+    let gallerySlides = [];
+    let galleryAutoTimer = null;
+    let lastGalleryGroupSize = galleryGroupSize();
+    let galleryImagesReady = false;
 
-    function initGallery() {
+    function galleryGroupSize() {
+      return window.innerWidth <= 900 ? 2 : 4;
+    }
+
+    function chunkPhotos(items, chunkSize) {
+      const chunks = [];
+      for (let idx = 0; idx < items.length; idx += chunkSize) {
+        chunks.push(items.slice(idx, idx + chunkSize));
+      }
+      return chunks;
+    }
+
+    function preloadGalleryImages() {
+      return Promise.allSettled(
+        photoList.map((photo) => new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = `./photos/${photo}`;
+        }))
+      );
+    }
+
+    async function initGallery() {
       if (photoList.length === 0) return;
 
+      if (!galleryImagesReady) {
+        galleryLoading.style.display = "flex";
+        await preloadGalleryImages();
+        galleryImagesReady = true;
+        galleryLoading.style.display = "none";
+      }
+
+      lastGalleryGroupSize = galleryGroupSize();
+      gallerySlides = chunkPhotos(photoList, lastGalleryGroupSize);
+      galleryIndex = Math.min(galleryIndex, Math.max(gallerySlides.length - 1, 0));
+      galleryContainer.innerHTML = "";
+      galleryNav.innerHTML = "";
+
       // Create slides
-      photoList.forEach((photo) => {
+      gallerySlides.forEach((slidePhotos, slideIdx) => {
         const slide = document.createElement("div");
         slide.className = "gallery-slide";
-        const img = document.createElement("img");
-        img.src = `./photos/${photo}`;
-        img.alt = `Tahj's visit to school`;
-        slide.appendChild(img);
+
+        slidePhotos.forEach((photo) => {
+          const frame = document.createElement("div");
+          frame.className = "gallery-photo-frame";
+          const img = document.createElement("img");
+          img.src = `./photos/${photo}`;
+          img.alt = "Tahj's visit to school";
+          frame.appendChild(img);
+          slide.appendChild(frame);
+        });
+
         galleryContainer.appendChild(slide);
       });
 
       // Create navigation dots
-      photoList.forEach((_, idx) => {
+      gallerySlides.forEach((_, idx) => {
         const dot = document.createElement("button");
         dot.className = `gallery-dot ${idx === 0 ? "active" : ""}`;
         dot.type = "button";
@@ -1642,13 +1726,18 @@
       });
 
       // Event listeners for navigation
-      galPrev.addEventListener("click", () => prevSlide());
-      galNext.addEventListener("click", () => nextSlide());
+      galPrev.onclick = () => prevSlide();
+      galNext.onclick = () => nextSlide();
 
-      // Auto-advance gallery every 4 seconds
-      setInterval(() => {
+      // Auto-advance gallery after images are ready
+      if (galleryAutoTimer) {
+        clearInterval(galleryAutoTimer);
+      }
+      galleryAutoTimer = setInterval(() => {
         nextSlide();
-      }, 4000);
+      }, 8000);
+
+      goToSlide(galleryIndex);
     }
 
     function goToSlide(idx) {
@@ -1658,12 +1747,12 @@
     }
 
     function nextSlide() {
-      galleryIndex = (galleryIndex + 1) % photoList.length;
+      galleryIndex = (galleryIndex + 1) % gallerySlides.length;
       goToSlide(galleryIndex);
     }
 
     function prevSlide() {
-      galleryIndex = (galleryIndex - 1 + photoList.length) % photoList.length;
+      galleryIndex = (galleryIndex - 1 + gallerySlides.length) % gallerySlides.length;
       goToSlide(galleryIndex);
     }
 
@@ -1673,13 +1762,19 @@
       });
     }
 
+    window.addEventListener("resize", () => {
+      const nextGroupSize = galleryGroupSize();
+      if (nextGroupSize !== lastGalleryGroupSize) {
+        initGallery();
+      }
+    });
+
     // Initialize everything
     bindSort();
     bindControls();
     initPresets();
     initGallery();
     updateWeightLabels();
-    updateFilterLabels();
     loadData();
   </script>
 </body>

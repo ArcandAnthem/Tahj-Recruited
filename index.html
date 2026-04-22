@@ -61,6 +61,91 @@
       line-height: 1.45;
     }
 
+    .photo-gallery {
+      margin-top: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: #000;
+      position: relative;
+      height: 280px;
+    }
+
+    .gallery-container {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      height: 100%;
+    }
+
+    .gallery-slide {
+      min-width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .gallery-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gallery-nav {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    .gallery-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .gallery-dot.active {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .gallery-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.4);
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+      z-index: 5;
+    }
+
+    .gallery-btn:hover {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .gallery-btn.prev {
+      left: 10px;
+    }
+
+    .gallery-btn.next {
+      right: 10px;
+    }
+
     .controls {
       margin-top: 16px;
       display: flex;
@@ -425,6 +510,78 @@
       color: #425366;
     }
 
+    .column-guide {
+      background: #f0f4f8;
+      border-left: 4px solid var(--accent);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+
+    .column-guide strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+
+    .column-guide ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .column-guide li {
+      margin: 6px 0;
+      line-height: 1.35;
+      color: #425366;
+    }
+
+    .column-guide strong:not(:first-child) {
+      margin-top: 12px;
+    }
+
+    .slider-help {
+      background: #fef8f0;
+      border: 1px solid #f0d4c4;
+      padding: 12px 14px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      font-size: 0.88rem;
+      color: #425366;
+      line-height: 1.4;
+    }
+
+    .slider-help strong {
+      color: var(--ink);
+    }
+
+    .references-section {
+      margin-top: 40px;
+      padding: 20px;
+      background: #f9f8f6;
+      border-radius: 10px;
+      border-top: 2px solid var(--line);
+      display: block !important;
+    }
+
+    .references-section h3 {
+      margin: 0 0 14px;
+      color: var(--ink);
+      font-size: 1.1rem;
+    }
+
+    .references-section ol {
+      margin: 0;
+      padding-left: 24px;
+    }
+
+    .references-section li {
+      margin: 8px 0;
+      line-height: 1.5;
+      color: #425366;
+      font-size: 0.9rem;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
@@ -446,6 +603,16 @@
 
       .hero {
         padding: 20px 16px;
+      }
+
+      .photo-gallery {
+        height: 200px;
+      }
+
+      .gallery-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
       }
 
       .slider-grid {
@@ -483,6 +650,15 @@
         </label>
         <span id="refreshStatus" class="status">Waiting to refresh...</span>
       </div>
+    </section>
+
+    <section class="photo-gallery">
+      <div class="gallery-container" id="galleryContainer">
+        <!-- Photos will be loaded here by JavaScript -->
+      </div>
+      <button class="gallery-btn prev" id="galPrev" type="button">❮</button>
+      <button class="gallery-btn next" id="galNext" type="button">❯</button>
+      <div class="gallery-nav" id="galleryNav"></div>
     </section>
 
     <section class="cards" id="summaryCards"></section>
@@ -525,12 +701,31 @@
     </section>
 
     <section id="overviewPanel" class="panel active">
+      <div class="column-guide">
+        <strong>Column Definitions:</strong>
+        <ul>
+          <li><strong>Overall Fit Score:</strong> Composite score (0-100) based on all school factors</li>
+          <li><strong>Black Students (# & %):</strong> Count and percentage of Black undergraduate students (latest year)</li>
+          <li><strong>Total Undergrad Population:</strong> Total number of undergraduates at the school (latest year)</li>
+          <li><strong>Avg Salary After Graduation:</strong> Average salary reported by graduates of this school</li>
+          <li><strong>Pre-Med Med-School Acceptance (%):</strong> Percentage of pre-med students accepted to medical school</li>
+          <li><strong>Conference & Region:</strong> Athletic conference and geographic region</li>
+          <li><strong>Selectivity:</strong> Academic admission selectivity level</li>
+          <li><strong>NFL Players:</strong> Number of players recruited to the NFL</li>
+          <li><strong>Bowl/Championship Appearances:</strong> Football program achievements</li>
+        </ul>
+      </div>
       <section class="table-wrap">
         <table>
           <thead>
             <tr>
               <th data-sort="fitScore">Overall Fit Score</th>
               <th data-sort="school">School</th>
+              <th data-sort="blackStudentCount">Black Students (#)</th>
+              <th data-sort="blackStudentPct">Black Students (%)</th>
+              <th data-sort="undergradPopulationLatestYear">Total Undergrad Population</th>
+              <th data-sort="avgSalaryAfterGraduationUSD">Avg Salary After Graduation</th>
+              <th data-sort="preMedAcceptancePct">Pre-Med Med-School Acceptance (%)</th>
               <th data-sort="conference">Conference</th>
               <th data-sort="region">Region</th>
               <th data-sort="academicSelectivity">Selectivity</th>
@@ -538,14 +733,9 @@
               <th data-sort="bowlAppearances">Bowl Appearances</th>
               <th data-sort="conferenceChampionships">Conference Titles</th>
               <th data-sort="nationalChampionships">National Titles</th>
-              <th data-sort="blackStudentCount">Black Students (#)</th>
-              <th data-sort="blackStudentPct">Black Students (%)</th>
-              <th data-sort="preMedAcceptancePct">Pre-Med Med-School Acceptance (%)</th>
               <th>Ethnic Diversity (Count)</th>
               <th>Ethnic Diversity (%)</th>
-              <th data-sort="undergradPopulationLatestYear">Total Undergrad Population (Latest)</th>
               <th data-sort="ratio">Male vs Female Ratio</th>
-              <th data-sort="avgSalaryAfterGraduationUSD">Avg Salary After Graduation</th>
               <th data-sort="year">Most Recent Year</th>
             </tr>
           </thead>
@@ -558,30 +748,39 @@
     <section id="devPanel" class="panel">
       <section class="dev-section">
         <article class="slider-card">
+          <div class="slider-help">
+            <strong>How the Sliders Work:</strong> Adjust the six factors below to create a custom scoring system that prioritizes what matters most for Tahj's development. Each slider represents how much weight to give that factor (0–100). The system automatically normalizes scores, so any combination works. Save presets to quickly switch between different weighting scenarios (e.g., "NFL-first" vs. "Early Playing Time First").
+          </div>
           <div class="slider-grid">
             <div class="slider-item">
               <div class="slider-top"><span>Early Playing Time</span><span id="wPlayTimeVal">25</span></div>
               <input id="wPlayTime" type="range" min="0" max="100" step="1" value="25" />
+              <small style="color: #5b5f66; display: block; margin-top: 4px;">Schools with smaller rosters / less competitive recruiting</small>
             </div>
             <div class="slider-item">
               <div class="slider-top"><span>NFL Development</span><span id="wNflDevVal">25</span></div>
               <input id="wNflDev" type="range" min="0" max="100" step="1" value="25" />
+              <small style="color: #5b5f66; display: block; margin-top: 4px;">Number of players this school has placed in the NFL</small>
             </div>
             <div class="slider-item">
               <div class="slider-top"><span>Winning Program</span><span id="wWinningVal">20</span></div>
               <input id="wWinning" type="range" min="0" max="100" step="1" value="20" />
+              <small style="color: #5b5f66; display: block; margin-top: 4px;">Bowl appearances, conference titles, and national championships</small>
             </div>
             <div class="slider-item">
               <div class="slider-top"><span>Academic Strength</span><span id="wAcademicVal">15</span></div>
               <input id="wAcademic" type="range" min="0" max="100" step="1" value="15" />
+              <small style="color: #5b5f66; display: block; margin-top: 4px;">Academic selectivity / admission difficulty of school</small>
             </div>
             <div class="slider-item">
               <div class="slider-top"><span>Post-Grad Earnings</span><span id="wEarningsVal">10</span></div>
               <input id="wEarnings" type="range" min="0" max="100" step="1" value="10" />
+              <small style="color: #5b5f66; display: block; margin-top: 4px;">Average salary of graduates (all majors)</small>
             </div>
             <div class="slider-item">
               <div class="slider-top"><span>Campus Diversity</span><span id="wDiversityVal">5</span></div>
               <input id="wDiversity" type="range" min="0" max="100" step="1" value="5" />
+              <small style="color: #5b5f66; display: block; margin-top: 4px;">Percentage of non-white students on campus</small>
             </div>
           </div>
           <div class="preset-row">
@@ -598,6 +797,19 @@
           <p id="presetStatus" class="preset-status"></p>
           <p class="dev-summary" id="weightSummary"></p>
         </article>
+
+        <div class="column-guide" style="margin-top: 20px; margin-bottom: 16px;">
+          <strong>Development Score & Column Definitions:</strong>
+          <ul>
+            <li><strong>Tailored Dev Score:</strong> Composite score (0-100) calculated from your six slider weights. Adjust sliders and watch how school rankings change.</li>
+            <li><strong>Playing Time Proxy (0-100):</strong> Estimated based on roster size (smaller = more playing time) and conference strength (weaker = more opportunities).</li>
+            <li><strong>NFL Dev Proxy (0-100):</strong> Raw count of NFL players from this school, normalized to 0-100 scale.</li>
+            <li><strong>Winning Proxy (0-100):</strong> Weighted combination of bowl appearances (50%), conference titles (30%), and national championships (20%), normalized to 0-100.</li>
+            <li><strong>Academic Proxy (0-100):</strong> School's academic selectivity level (Very High = 100, High = 80, Moderate = 60, etc.), normalized to 0-100.</li>
+            <li><strong>Earnings Proxy (0-100):</strong> Average salary of graduates, normalized across all schools to 0-100 (highest salary = 100, lowest = 0).</li>
+            <li><strong>Diversity Proxy (0-100):</strong> Percentage of non-white students on campus, normalized to 0-100.</li>
+          </ul>
+        </div>
 
         <section class="table-wrap">
           <table>
@@ -621,11 +833,19 @@
       </section>
     </section>
 
-    <p class="footnote">
-      Values are dashboard-ready estimates for quick comparison and can be refreshed from
-      <span class="mono">data/schools.json</span>. For final decisions, verify the latest values against
-      NCAA/official athletics records, university fact books, and the U.S. College Scorecard.
-    </p>
+    <section class="references-section">
+      <h3>Data Sources & References (APA 7 Format)</h3>
+      <ol>
+        <li>National Collegiate Athletic Association (NCAA). (2024). <em>NCAA Athletics Statistics</em>. Retrieved from https://www.ncaa.org/news/analytics</li>
+        <li>U.S. Department of Education. (2024). <em>College Scorecard</em>. Retrieved from https://collegescorecard.ed.gov/</li>
+        <li>Bureau of Labor Statistics. (2024). <em>Employment projections by education level and major</em>. U.S. Department of Labor. Retrieved from https://www.bls.gov/careeroutlook/</li>
+        <li>Association of American Medical Colleges. (2024). <em>Medical school acceptances and matriculation data</em>. Retrieved from https://www.aamc.org/</li>
+        <li>Each university's official fact book, institutional research office, and public athletics records for enrollment, demographic, and athletic achievement data.</li>
+      </ol>
+      <p style="margin-top: 14px; font-size: 0.85rem; color: #5b5f66; font-style: italic;">
+        <strong>Note:</strong> This dashboard is for decision support only. For final decisions, verify all data against the most recent official sources from the NCAA, institution fact books, and U.S. College Scorecard.
+      </p>
+    </section>
   </main>
 
   <script>
@@ -1212,6 +1432,11 @@
                 <strong>${school.school}</strong><br>
                 <span class="chip">Non-White Diversity: ${diversityNoWhite.toFixed(1)}%</span>
               </td>
+              <td class="mono">${fmtNumber(school.blackStudentCount)}</td>
+              <td class="mono">${school.blackStudentPct.toFixed(1)}%</td>
+              <td class="mono">${fmtNumber(school.undergradPopulationLatestYear)}</td>
+              <td class="mono">${fmtMoney(school.avgSalaryAfterGraduationUSD)}</td>
+              <td class="mono">${school.preMedAcceptancePct.toFixed(1)}%</td>
               <td>${school.conference}</td>
               <td>${school.region}</td>
               <td>${school.academicSelectivity}</td>
@@ -1219,14 +1444,9 @@
               <td class="mono">${fmtNumber(school.bowlAppearances)}</td>
               <td class="mono">${fmtNumber(school.conferenceChampionships)}</td>
               <td class="mono">${fmtNumber(school.nationalChampionships)}</td>
-              <td class="mono">${fmtNumber(school.blackStudentCount)}</td>
-              <td class="mono">${school.blackStudentPct.toFixed(1)}%</td>
-              <td class="mono">${school.preMedAcceptancePct.toFixed(1)}%</td>
               <td class="mini mono">${ethnicBlockCounts(ethnicityCounts)}</td>
               <td class="mini mono">${ethnicBlockPct(school.ethnicityPct)}</td>
-              <td class="mono">${fmtNumber(school.undergradPopulationLatestYear)}</td>
               <td class="mono ratio">${ratioValue(school)}</td>
-              <td class="mono">${fmtMoney(school.avgSalaryAfterGraduationUSD)}</td>
               <td class="mono">${school.year}</td>
             </tr>
           `;
@@ -1365,9 +1585,86 @@
       });
     }
 
+    // Initialize photo gallery
+    const galleryContainer = document.getElementById("galleryContainer");
+    const galleryNav = document.getElementById("galleryNav");
+    const galPrev = document.getElementById("galPrev");
+    const galNext = document.getElementById("galNext");
+
+    // List of photos from the Photos of Visits folder
+    const photoList = [
+      "IMG_1617.HEIC", "IMG_1620.HEIC", "IMG_1646.HEIC", "IMG_1651.HEIC",
+      "IMG_1674.HEIC", "IMG_1693.HEIC", "IMG_1711.HEIC", "IMG_1750.HEIC",
+      "IMG_1777.HEIC", "IMG_1780.HEIC", "IMG_1791.HEIC", "IMG_1820.JPEG",
+      "IMG_1842.HEIC", "IMG_2681.JPG", "IMG_2700.JPG", "IMG_2702.JPEG",
+      "IMG_2708.JPEG", "IMG_2709.JPG", "IMG_2710.JPG", "IMG_2721.JPG",
+      "IMG_2723.JPG", "IMG_4246.HEIC", "IMG_4250.HEIC", "IMG_4337.HEIC",
+      "IMG_4338.HEIC", "IMG_4343.HEIC", "IMG_4346.HEIC", "IMG_4360.HEIC",
+      "IMG_4365.HEIC", "IMG_4368.HEIC"
+    ];
+
+    let galleryIndex = 0;
+
+    function initGallery() {
+      if (photoList.length === 0) return;
+
+      // Create slides
+      photoList.forEach((photo) => {
+        const slide = document.createElement("div");
+        slide.className = "gallery-slide";
+        const img = document.createElement("img");
+        img.src = `./Photos of Visits/${photo}`;
+        img.alt = `Tahj's visit to school`;
+        slide.appendChild(img);
+        galleryContainer.appendChild(slide);
+      });
+
+      // Create navigation dots
+      photoList.forEach((_, idx) => {
+        const dot = document.createElement("button");
+        dot.className = `gallery-dot ${idx === 0 ? "active" : ""}`;
+        dot.type = "button";
+        dot.addEventListener("click", () => goToSlide(idx));
+        galleryNav.appendChild(dot);
+      });
+
+      // Event listeners for navigation
+      galPrev.addEventListener("click", () => prevSlide());
+      galNext.addEventListener("click", () => nextSlide());
+
+      // Auto-advance gallery every 4 seconds
+      setInterval(() => {
+        nextSlide();
+      }, 4000);
+    }
+
+    function goToSlide(idx) {
+      galleryIndex = idx;
+      galleryContainer.style.transform = `translateX(-${galleryIndex * 100}%)`;
+      updateDots();
+    }
+
+    function nextSlide() {
+      galleryIndex = (galleryIndex + 1) % photoList.length;
+      goToSlide(galleryIndex);
+    }
+
+    function prevSlide() {
+      galleryIndex = (galleryIndex - 1 + photoList.length) % photoList.length;
+      goToSlide(galleryIndex);
+    }
+
+    function updateDots() {
+      document.querySelectorAll(".gallery-dot").forEach((dot, idx) => {
+        dot.classList.toggle("active", idx === galleryIndex);
+      });
+    }
+
+    // Initialize everything
     bindSort();
     bindControls();
     initPresets();
+    initGallery();
     updateWeightLabels();
     updateFilterLabels();
     loadData();

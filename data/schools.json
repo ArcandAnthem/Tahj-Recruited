@@ -2,6 +2,10 @@
   {
     "school": "Northern Arizona University",
     "conference": "Big Sky (FCS)",
+    "conferenceByYear": {
+      "2024": "Big Sky (FCS)"
+    },
+    "conferenceSeasonYear": 2024,
     "region": "Southwest",
     "academicSelectivity": "Moderate",
     "year": 2024,
@@ -31,7 +35,12 @@
   },
   {
     "school": "Boise State University",
-    "conference": "Mountain West",
+    "conference": "Pac12",
+    "conferenceByYear": {
+      "2024": "Mountain West",
+      "2026": "Pac12"
+    },
+    "conferenceSeasonYear": 2026,
     "region": "Mountain West",
     "academicSelectivity": "Moderate",
     "year": 2024,
@@ -62,6 +71,10 @@
   {
     "school": "Princeton University",
     "conference": "Ivy League",
+    "conferenceByYear": {
+      "2024": "Ivy League"
+    },
+    "conferenceSeasonYear": 2024,
     "region": "Northeast",
     "academicSelectivity": "Very High",
     "year": 2024,
@@ -92,6 +105,10 @@
   {
     "school": "University of Pennsylvania",
     "conference": "Ivy League",
+    "conferenceByYear": {
+      "2024": "Ivy League"
+    },
+    "conferenceSeasonYear": 2024,
     "region": "Northeast",
     "academicSelectivity": "Very High",
     "year": 2024,
@@ -122,6 +139,10 @@
   {
     "school": "Columbia University",
     "conference": "Ivy League",
+    "conferenceByYear": {
+      "2024": "Ivy League"
+    },
+    "conferenceSeasonYear": 2024,
     "region": "Northeast",
     "academicSelectivity": "Very High",
     "year": 2024,
@@ -152,6 +173,10 @@
   {
     "school": "Harvard University",
     "conference": "Ivy League",
+    "conferenceByYear": {
+      "2024": "Ivy League"
+    },
+    "conferenceSeasonYear": 2024,
     "region": "Northeast",
     "academicSelectivity": "Very High",
     "year": 2024,
@@ -182,6 +207,10 @@
   {
     "school": "Yale University",
     "conference": "Ivy League",
+    "conferenceByYear": {
+      "2024": "Ivy League"
+    },
+    "conferenceSeasonYear": 2024,
     "region": "Northeast",
     "academicSelectivity": "Very High",
     "year": 2024,
@@ -212,6 +241,10 @@
   {
     "school": "Cornell University",
     "conference": "Ivy League",
+    "conferenceByYear": {
+      "2024": "Ivy League"
+    },
+    "conferenceSeasonYear": 2024,
     "region": "Northeast",
     "academicSelectivity": "Very High",
     "year": 2024,
@@ -242,6 +275,10 @@
   {
     "school": "San Jose State University",
     "conference": "Mountain West",
+    "conferenceByYear": {
+      "2024": "Mountain West"
+    },
+    "conferenceSeasonYear": 2024,
     "region": "West",
     "academicSelectivity": "Moderate",
     "year": 2024,
@@ -272,6 +309,10 @@
   {
     "school": "University of California, Davis",
     "conference": "Big West (FCS in Big Sky)",
+    "conferenceByYear": {
+      "2024": "Big West (FCS in Big Sky)"
+    },
+    "conferenceSeasonYear": 2024,
     "region": "West",
     "academicSelectivity": "High",
     "year": 2024,
@@ -302,6 +343,10 @@
   {
     "school": "Stanford University",
     "conference": "ACC",
+    "conferenceByYear": {
+      "2024": "ACC"
+    },
+    "conferenceSeasonYear": 2024,
     "region": "West",
     "academicSelectivity": "Very High",
     "year": 2024,
@@ -331,7 +376,12 @@
   },
   {
     "school": "San Diego State University",
-    "conference": "Mountain West",
+    "conference": "Pac12",
+    "conferenceByYear": {
+      "2024": "Mountain West",
+      "2026": "Pac12"
+    },
+    "conferenceSeasonYear": 2026,
     "region": "West",
     "academicSelectivity": "Moderate",
     "year": 2024,

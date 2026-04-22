@@ -68,7 +68,7 @@
       box-shadow: var(--shadow);
       background: #000;
       position: relative;
-      height: 220px;
+      height: 170px;
     }
 
     .gallery-container {
@@ -94,9 +94,9 @@
       min-width: 100%;
       height: 100%;
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 8px;
-      padding: 8px;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 6px;
+      padding: 6px;
       flex-shrink: 0;
     }
 
@@ -104,6 +104,7 @@
       height: 100%;
       border-radius: 10px;
       overflow: hidden;
+      padding: 6px;
       background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
         #0e1a24;
@@ -113,8 +114,10 @@
     }
 
     .gallery-slide img {
-      width: 100%;
-      height: 100%;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
       object-fit: contain;
       object-position: center top;
     }
@@ -652,7 +655,7 @@
       }
 
       .photo-gallery {
-        height: 180px;
+        height: 150px;
       }
 
       .gallery-slide {
@@ -1659,8 +1662,24 @@
     let lastGalleryGroupSize = galleryGroupSize();
     let galleryImagesReady = false;
 
+    function startGalleryAutoRotate() {
+      if (galleryAutoTimer) {
+        clearInterval(galleryAutoTimer);
+      }
+      galleryAutoTimer = setInterval(() => {
+        nextSlide();
+      }, 12000);
+    }
+
+    function stopGalleryAutoRotate() {
+      if (galleryAutoTimer) {
+        clearInterval(galleryAutoTimer);
+        galleryAutoTimer = null;
+      }
+    }
+
     function galleryGroupSize() {
-      return window.innerWidth <= 900 ? 2 : 4;
+      return window.innerWidth <= 900 ? 2 : 5;
     }
 
     function chunkPhotos(items, chunkSize) {
@@ -1730,12 +1749,7 @@
       galNext.onclick = () => nextSlide();
 
       // Auto-advance gallery after images are ready
-      if (galleryAutoTimer) {
-        clearInterval(galleryAutoTimer);
-      }
-      galleryAutoTimer = setInterval(() => {
-        nextSlide();
-      }, 8000);
+      startGalleryAutoRotate();
 
       goToSlide(galleryIndex);
     }
@@ -1768,6 +1782,9 @@
         initGallery();
       }
     });
+
+    galleryContainer.addEventListener("mouseenter", stopGalleryAutoRotate);
+    galleryContainer.addEventListener("mouseleave", startGalleryAutoRotate);
 
     // Initialize everything
     bindSort();

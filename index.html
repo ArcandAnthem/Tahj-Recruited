@@ -374,6 +374,40 @@
       color: #17324d;
     }
 
+    .mobile-details {
+      margin-top: 6px;
+      border-top: 1px dashed #d7d1c7;
+      padding-top: 8px;
+    }
+
+    .mobile-details > summary {
+      list-style: none;
+      cursor: pointer;
+      user-select: none;
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #cfd8e3;
+      background: #eef4fb;
+      color: #1f3c5c;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .mobile-details > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .mobile-details[open] > summary {
+      background: #e4eef9;
+    }
+
+    .mobile-details-body {
+      margin-top: 8px;
+      display: grid;
+      gap: 4px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -1292,13 +1326,19 @@
             <div class="mobile-title">#${i + 1} ${row.school}</div>
             <div class="mobile-section-title">Priority Score</div>
             <div class="mobile-row"><strong>Tailored Score:</strong> ${row.score}</div>
-            <div class="mobile-section-title">Decision Criteria Breakdown</div>
-            <div class="mobile-row"><strong>Playing Time Proxy:</strong> ${row.play}</div>
-            <div class="mobile-row"><strong>NFL Development Proxy:</strong> ${row.nfl}</div>
-            <div class="mobile-row"><strong>Winning Program Proxy:</strong> ${row.win}</div>
-            <div class="mobile-row"><strong>Academic Proxy:</strong> ${row.academic}</div>
-            <div class="mobile-row"><strong>Earnings Proxy:</strong> ${row.earnings}</div>
-            <div class="mobile-row"><strong>Diversity Proxy:</strong> ${row.diversity}</div>
+            <div class="mobile-row"><strong>Top Drivers:</strong> Play ${row.play} | NFL ${row.nfl} | Win ${row.win}</div>
+            <details class="mobile-details">
+              <summary>Show more details</summary>
+              <div class="mobile-details-body">
+                <div class="mobile-section-title">Decision Criteria Breakdown</div>
+                <div class="mobile-row"><strong>Playing Time Proxy:</strong> ${row.play}</div>
+                <div class="mobile-row"><strong>NFL Development Proxy:</strong> ${row.nfl}</div>
+                <div class="mobile-row"><strong>Winning Program Proxy:</strong> ${row.win}</div>
+                <div class="mobile-row"><strong>Academic Proxy:</strong> ${row.academic}</div>
+                <div class="mobile-row"><strong>Earnings Proxy:</strong> ${row.earnings}</div>
+                <div class="mobile-row"><strong>Diversity Proxy:</strong> ${row.diversity}</div>
+              </div>
+            </details>
           </article>
         `)
         .join("");
@@ -1475,12 +1515,15 @@
               <div class="mobile-title">${school.school}</div>
               <div class="mobile-section-title">Overview</div>
               <div class="mobile-row"><strong>Overall Fit:</strong> ${school.fitScore} (${scoreLabel(school.fitScore)})</div>
+              <div class="mobile-row"><strong>Avg Salary:</strong> ${fmtMoney(school.avgSalaryAfterGraduationUSD)}</div>
+              <div class="mobile-row"><strong>Pre-Med Acceptance:</strong> ${school.preMedAcceptancePct.toFixed(1)}%</div>
+              <details class="mobile-details">
+                <summary>Show more details</summary>
+                <div class="mobile-details-body">
               <div class="mobile-row"><strong>Male vs Female Ratio:</strong> ${ratioValue(school)}</div>
               <div class="mobile-row"><strong>Latest Year:</strong> ${school.year}</div>
 
               <div class="mobile-section-title">Student Outcomes</div>
-              <div class="mobile-row"><strong>Avg Salary:</strong> ${fmtMoney(school.avgSalaryAfterGraduationUSD)}</div>
-              <div class="mobile-row"><strong>Pre-Med Acceptance:</strong> ${school.preMedAcceptancePct.toFixed(1)}%</div>
               <div class="mobile-row"><strong>Total Undergrads:</strong> ${fmtNumber(school.undergradPopulationLatestYear)}</div>
               <div class="mobile-row"><strong>Selectivity:</strong> ${school.academicSelectivity}</div>
 
@@ -1496,6 +1539,8 @@
               <div class="mobile-row"><strong>Black Students:</strong> ${fmtNumber(school.blackStudentCount)} (${school.blackStudentPct.toFixed(1)}%)</div>
               <div class="mobile-row"><strong>Non-White Diversity:</strong> ${diversityNoWhite.toFixed(1)}%</div>
               <div class="mobile-row"><strong>Largest Student Groups (#):</strong><br>${topEthnicityCounts(ethnicityCounts, 3)}</div>
+                </div>
+              </details>
             </article>
           `;
         })

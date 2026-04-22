@@ -721,6 +721,7 @@
             <tr>
               <th data-sort="fitScore">Overall Fit Score</th>
               <th data-sort="school">School</th>
+              <th data-sort="ratio">Male vs Female Ratio</th>
               <th data-sort="blackStudentCount">Black Students (#)</th>
               <th data-sort="blackStudentPct">Black Students (%)</th>
               <th data-sort="undergradPopulationLatestYear">Total Undergrad Population</th>
@@ -731,11 +732,10 @@
               <th data-sort="academicSelectivity">Selectivity</th>
               <th data-sort="nflPlayers"># NFL Players Recruited</th>
               <th data-sort="bowlAppearances">Bowl Appearances</th>
-              <th data-sort="conferenceChampionships">Conference Titles</th>
-              <th data-sort="nationalChampionships">National Titles</th>
+              <th data-sort="conferenceChampionships">Conference Titles (Football)</th>
+              <th data-sort="nationalChampionships">National Titles (Football)</th>
               <th>Ethnic Diversity (Count)</th>
               <th>Ethnic Diversity (%)</th>
-              <th data-sort="ratio">Male vs Female Ratio</th>
               <th data-sort="year">Most Recent Year</th>
             </tr>
           </thead>
@@ -1432,6 +1432,7 @@
                 <strong>${school.school}</strong><br>
                 <span class="chip">Non-White Diversity: ${diversityNoWhite.toFixed(1)}%</span>
               </td>
+              <td class="mono ratio">${ratioValue(school)}</td>
               <td class="mono">${fmtNumber(school.blackStudentCount)}</td>
               <td class="mono">${school.blackStudentPct.toFixed(1)}%</td>
               <td class="mono">${fmtNumber(school.undergradPopulationLatestYear)}</td>
@@ -1446,7 +1447,6 @@
               <td class="mono">${fmtNumber(school.nationalChampionships)}</td>
               <td class="mini mono">${ethnicBlockCounts(ethnicityCounts)}</td>
               <td class="mini mono">${ethnicBlockPct(school.ethnicityPct)}</td>
-              <td class="mono ratio">${ratioValue(school)}</td>
               <td class="mono">${school.year}</td>
             </tr>
           `;
@@ -1503,6 +1503,8 @@
 
     function bindSort() {
       document.querySelectorAll("th[data-sort]").forEach((th) => {
+        th.style.cursor = "pointer";
+        th.title = "Click to sort";
         th.addEventListener("click", () => {
           const newKey = th.getAttribute("data-sort");
           if (sortKey === newKey) {
@@ -1512,6 +1514,17 @@
             sortAsc = true;
           }
           renderAll();
+          // Update visual indicators
+          document.querySelectorAll("th[data-sort]").forEach((t) => {
+            if (t.getAttribute("data-sort") === sortKey) {
+              t.style.background = "#d0e4f7";
+              t.style.fontWeight = "800";
+              t.textContent += sortAsc ? " ↑" : " ↓";
+            } else {
+              t.style.background = "#f0f7ff";
+              t.style.fontWeight = "700";
+            }
+          });
         });
       });
     }

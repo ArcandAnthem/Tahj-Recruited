@@ -66,7 +66,8 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: var(--shadow);
-      background: #000;
+      background: #e8e4dc;
+      border: 1px solid #d3cec3;
       position: relative;
       height: 170px;
     }
@@ -83,10 +84,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: rgba(255, 255, 255, 0.85);
+      color: #3f4a58;
       font-size: 0.95rem;
       letter-spacing: 0.3px;
-      background: linear-gradient(180deg, rgba(7, 18, 29, 0.75), rgba(7, 18, 29, 0.92));
+      background: rgba(232, 228, 220, 0.92);
       z-index: 2;
     }
 
@@ -95,19 +96,18 @@
       height: 100%;
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 6px;
-      padding: 6px;
+      gap: 3px;
+      padding: 3px;
       flex-shrink: 0;
     }
 
     .gallery-photo-frame {
       height: 100%;
-      border-radius: 10px;
+      border-radius: 8px;
       overflow: hidden;
-      padding: 6px;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
-        #0e1a24;
+      padding: 2px;
+      background: #f7f4ee;
+      border: 1px solid #d7d1c7;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -136,13 +136,13 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.4);
+      background: rgba(85, 95, 108, 0.35);
       cursor: pointer;
       transition: background 0.3s ease;
     }
 
     .gallery-dot.active {
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(26, 46, 71, 0.8);
     }
 
     .gallery-btn {
@@ -218,7 +218,7 @@
     .cards {
       margin-top: 18px;
       display: grid;
-      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      grid-template-columns: repeat(3, minmax(130px, 1fr));
       gap: 12px;
     }
 
@@ -754,7 +754,7 @@
               <th data-sort="blackStudentCount">Black Students (#)</th>
               <th data-sort="blackStudentPct">Black Students (%)</th>
               <th data-sort="undergradPopulationLatestYear">Total Undergrad Population</th>
-              <th data-sort="avgSalaryAfterGraduationUSD">Avg Salary After Graduation</th>
+              <th data-sort="avgSalaryAfterGraduationUSD">Average Graduating Salary (USD)</th>
               <th data-sort="preMedAcceptancePct">Pre-Med Med-School Acceptance (%)</th>
               <th data-sort="conference">Conference</th>
               <th data-sort="region">Region</th>
@@ -857,7 +857,7 @@
           <li><strong>Male vs Female Ratio:</strong> The undergraduate gender ratio shown as male:female.</li>
           <li><strong>Black Students (# & %):</strong> Count and percentage of Black undergraduate students in the latest reported year.</li>
           <li><strong>Total Undergrad Population:</strong> Total number of undergraduate students in the latest reported year.</li>
-          <li><strong>Avg Salary After Graduation:</strong> Average salary reported by graduates of that school.</li>
+          <li><strong>Average Graduating Salary (USD):</strong> Average salary reported by graduates of that school.</li>
           <li><strong>Pre-Med Med-School Acceptance (%):</strong> Percentage of pre-med students accepted to medical school.</li>
           <li><strong>Conference & Region:</strong> Athletic conference and geographic region.</li>
           <li><strong>Selectivity:</strong> Academic admission selectivity level.</li>
@@ -1315,9 +1315,6 @@
       const schoolCount = data.length;
       const totalUndergrads = data.reduce((sum, s) => sum + s.undergradPopulationLatestYear, 0);
       const bestFit = [...data].sort((a, b) => b.fitScore - a.fitScore)[0];
-      const avgSalary = Math.round(
-        data.reduce((sum, s) => sum + s.avgSalaryAfterGraduationUSD, 0) / schoolCount
-      );
 
       cardsEl.innerHTML = `
         <article class="card">
@@ -1331,10 +1328,6 @@
         <article class="card">
           <div class="label">Top Overall Fit</div>
           <div class="value">${bestFit.school} (${bestFit.fitScore})</div>
-        </article>
-        <article class="card">
-          <div class="label">Avg Salary Across Visible Schools</div>
-          <div class="value mono">${fmtMoney(avgSalary)}</div>
         </article>
       `;
     }

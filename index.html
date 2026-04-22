@@ -99,10 +99,12 @@
       gap: 3px;
       padding: 3px;
       flex-shrink: 0;
+      align-items: center;
     }
 
     .gallery-photo-frame {
-      height: 100%;
+      width: 100%;
+      aspect-ratio: 3 / 4;
       border-radius: 8px;
       overflow: hidden;
       padding: 2px;
@@ -111,6 +113,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      justify-self: center;
     }
 
     .gallery-slide img {
@@ -122,27 +125,20 @@
       object-position: center top;
     }
 
-    .gallery-nav {
+    .gallery-counter {
       position: absolute;
       bottom: 12px;
       left: 50%;
       transform: translateX(-50%);
-      display: flex;
-      gap: 6px;
       z-index: 10;
-    }
-
-    .gallery-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(85, 95, 108, 0.35);
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .gallery-dot.active {
-      background: rgba(26, 46, 71, 0.8);
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(247, 244, 238, 0.9);
+      border: 1px solid #cfc9be;
+      color: #20354f;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
     }
 
     .gallery-btn {
@@ -711,7 +707,7 @@
       </div>
       <button class="gallery-btn prev" id="galPrev" type="button">❮</button>
       <button class="gallery-btn next" id="galNext" type="button">❯</button>
-      <div class="gallery-nav" id="galleryNav"></div>
+      <div class="gallery-counter" id="galleryCounter">1 / 1</div>
     </section>
 
     <section class="cards" id="summaryCards"></section>
@@ -1629,7 +1625,7 @@
 
     // Initialize photo gallery
     const galleryContainer = document.getElementById("galleryContainer");
-    const galleryNav = document.getElementById("galleryNav");
+    const galleryCounter = document.getElementById("galleryCounter");
     const galPrev = document.getElementById("galPrev");
     const galNext = document.getElementById("galNext");
     const galleryLoading = document.createElement("div");
@@ -1708,10 +1704,9 @@
       gallerySlides = chunkPhotos(photoList, lastGalleryGroupSize);
       galleryIndex = Math.min(galleryIndex, Math.max(gallerySlides.length - 1, 0));
       galleryContainer.innerHTML = "";
-      galleryNav.innerHTML = "";
 
       // Create slides
-      gallerySlides.forEach((slidePhotos, slideIdx) => {
+      gallerySlides.forEach((slidePhotos) => {
         const slide = document.createElement("div");
         slide.className = "gallery-slide";
 
@@ -1726,15 +1721,6 @@
         });
 
         galleryContainer.appendChild(slide);
-      });
-
-      // Create navigation dots
-      gallerySlides.forEach((_, idx) => {
-        const dot = document.createElement("button");
-        dot.className = `gallery-dot ${idx === 0 ? "active" : ""}`;
-        dot.type = "button";
-        dot.addEventListener("click", () => goToSlide(idx));
-        galleryNav.appendChild(dot);
       });
 
       // Event listeners for navigation
@@ -1764,9 +1750,7 @@
     }
 
     function updateDots() {
-      document.querySelectorAll(".gallery-dot").forEach((dot, idx) => {
-        dot.classList.toggle("active", idx === galleryIndex);
-      });
+      galleryCounter.textContent = `${galleryIndex + 1} / ${gallerySlides.length}`;
     }
 
     window.addEventListener("resize", () => {

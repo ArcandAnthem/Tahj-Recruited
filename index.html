@@ -1,0 +1,1376 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tahj Skinner's Football Decision Dashboard</title>
+  <style>
+    :root {
+      --bg: #f5f4ef;
+      --ink: #1d1f22;
+      --card: #fffdf8;
+      --accent: #004e89;
+      --accent-2: #f28f3b;
+      --muted: #5b5f66;
+      --line: #d8d6cf;
+      --ok: #2a9d8f;
+      --warn: #b56576;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% -10%, #ffe8cb 0%, transparent 38%),
+        radial-gradient(circle at 90% 0%, #dcefff 0%, transparent 40%),
+        var(--bg);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+
+    .wrap {
+      width: min(1200px, 94vw);
+      margin: 28px auto 40px;
+      animation: fadeIn 0.7s ease;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0a2342 0%, #004e89 55%, #3a7ca5 100%);
+      border-radius: 20px;
+      padding: 24px 22px;
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.5rem, 3vw, 2.3rem);
+      letter-spacing: 0.2px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.98rem;
+      max-width: 900px;
+      line-height: 1.45;
+    }
+
+    .controls {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: var(--accent-2);
+      color: #132022;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    button:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 7px 12px;
+      background: rgba(255, 255, 255, 0.14);
+      font-size: 0.9rem;
+    }
+
+    .status {
+      font-size: 0.9rem;
+      opacity: 0.95;
+    }
+
+    .cards {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 12px;
+    }
+
+    .filters {
+      margin-top: 16px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .tabs {
+      margin-top: 16px;
+      display: inline-flex;
+      gap: 8px;
+      background: #eef5ff;
+      border: 1px solid #d1deef;
+      border-radius: 999px;
+      padding: 6px;
+    }
+
+    .tab-btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: transparent;
+      color: #1c3957;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #0a2342;
+      color: #fff;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(170px, 1fr));
+      gap: 10px;
+    }
+
+    .filter-item {
+      display: grid;
+      gap: 6px;
+    }
+
+    .filter-item label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .filter-item select,
+    .filter-item input {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: #fff;
+      font-size: 0.9rem;
+      color: #243142;
+    }
+
+    .filter-item input[type="range"] {
+      padding: 0;
+      accent-color: #0f6ba7;
+    }
+
+    .filter-note {
+      font-size: 0.78rem;
+      color: #4a5f75;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px 14px;
+      box-shadow: var(--shadow);
+      animation: riseUp 0.45s ease;
+    }
+
+    .card .label {
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .card .value {
+      margin-top: 7px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #0a2342;
+    }
+
+    .table-wrap {
+      margin-top: 18px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: auto;
+      box-shadow: var(--shadow);
+    }
+
+    .mobile-cards {
+      display: none;
+      margin-top: 14px;
+      gap: 10px;
+    }
+
+    .mobile-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 11px;
+      box-shadow: var(--shadow);
+      font-size: 0.88rem;
+      display: grid;
+      gap: 4px;
+    }
+
+    .mobile-title {
+      color: #0a2342;
+      font-weight: 800;
+      font-size: 0.98rem;
+    }
+
+    .mobile-row {
+      color: #2d3f52;
+      line-height: 1.35;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1160px;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      background: #f0f7ff;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.84rem;
+      color: #17324d;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid #eceae3;
+      vertical-align: top;
+      font-size: 0.92rem;
+    }
+
+    tbody tr:hover {
+      background: #fff6e7;
+    }
+
+    .mono {
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .ratio {
+      color: #1f6f78;
+      font-weight: 700;
+    }
+
+    .mini {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      background: #e8f5f3;
+      color: #1d7268;
+    }
+
+    .score-chip {
+      display: inline-block;
+      min-width: 68px;
+      text-align: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #10202e;
+    }
+
+    .legend {
+      font-size: 0.82rem;
+      color: #415065;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .footnote {
+      margin-top: 12px;
+      color: #4a4f57;
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .dev-section {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .slider-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .slider-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .slider-item {
+      display: grid;
+      gap: 6px;
+    }
+
+    .slider-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.86rem;
+      color: #1c3957;
+      font-weight: 700;
+    }
+
+    .slider-item input[type="range"] {
+      width: 100%;
+      accent-color: #0f6ba7;
+    }
+
+    .preset-row {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .preset-actions {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .preset-row input,
+    .preset-row select {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: #fff;
+      font-size: 0.9rem;
+      color: #243142;
+      width: 100%;
+    }
+
+    .btn-secondary {
+      background: #dce9f6;
+      color: #17324d;
+    }
+
+    .preset-status {
+      margin-top: 8px;
+      font-size: 0.84rem;
+      color: #425366;
+      min-height: 18px;
+    }
+
+    .dev-summary {
+      font-size: 0.88rem;
+      color: #425366;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes riseUp {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .cards {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+      }
+
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 20px 16px;
+      }
+
+      .slider-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .preset-row,
+      .preset-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .table-wrap {
+        display: none;
+      }
+
+      .mobile-cards {
+        display: grid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <h1>Tahj Skinner Football Recruiting Dashboard</h1>
+      <p>
+        School-by-school view of football pipeline and student outcomes for Tahj's target list.
+        Includes NFL pipeline, ethnic diversity counts and percentages, undergrad population,
+        gender ratio, and post-graduation average salary.
+      </p>
+      <div class="controls">
+        <button id="refreshBtn" type="button">Refresh Data Now</button>
+        <label class="toggle">
+          <input id="autoRefresh" type="checkbox" /> Auto refresh every 60s
+        </label>
+        <span id="refreshStatus" class="status">Waiting to refresh...</span>
+      </div>
+    </section>
+
+    <section class="cards" id="summaryCards"></section>
+
+    <section class="filters">
+      <div class="filter-grid">
+        <div class="filter-item">
+          <label for="conferenceFilter">Conference</label>
+          <select id="conferenceFilter"></select>
+        </div>
+        <div class="filter-item">
+          <label for="regionFilter">Region</label>
+          <select id="regionFilter"></select>
+        </div>
+        <div class="filter-item">
+          <label for="selectivityFilter">Academic Selectivity</label>
+          <select id="selectivityFilter"></select>
+        </div>
+        <div class="filter-item">
+          <label for="salaryFilter">Min Salary After Graduation (USD)</label>
+          <input id="salaryFilter" type="range" min="0" max="120000" step="1000" value="0" />
+          <span id="salaryFilterVal" class="filter-note">$0+</span>
+        </div>
+        <div class="filter-item">
+          <label for="fitFilter">Min Overall Fit Score</label>
+          <input id="fitFilter" type="range" min="0" max="100" step="1" value="0" />
+          <span id="fitFilterVal" class="filter-note">0+</span>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i class="dot" style="background:#9ad9b9"></i>High fit (80+)</span>
+        <span><i class="dot" style="background:#f7dd8d"></i>Medium fit (60-79)</span>
+        <span><i class="dot" style="background:#f5b3a2"></i>Developing fit (<60)</span>
+      </div>
+    </section>
+
+    <section class="tabs" aria-label="Dashboard Sections">
+      <button id="overviewTabBtn" class="tab-btn active" type="button">Overview Comparison</button>
+      <button id="devTabBtn" class="tab-btn" type="button">Playing Time + Development</button>
+    </section>
+
+    <section id="overviewPanel" class="panel active">
+      <section class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="fitScore">Overall Fit Score</th>
+              <th data-sort="school">School</th>
+              <th data-sort="conference">Conference</th>
+              <th data-sort="region">Region</th>
+              <th data-sort="academicSelectivity">Selectivity</th>
+              <th data-sort="nflPlayers"># NFL Players Recruited</th>
+              <th data-sort="bowlAppearances">Bowl Appearances</th>
+              <th data-sort="conferenceChampionships">Conference Titles</th>
+              <th data-sort="nationalChampionships">National Titles</th>
+              <th data-sort="blackStudentCount">Black Students (#)</th>
+              <th data-sort="blackStudentPct">Black Students (%)</th>
+              <th data-sort="preMedAcceptancePct">Pre-Med Med-School Acceptance (%)</th>
+              <th>Ethnic Diversity (Count)</th>
+              <th>Ethnic Diversity (%)</th>
+              <th data-sort="undergradPopulationLatestYear">Total Undergrad Population (Latest)</th>
+              <th data-sort="ratio">Male vs Female Ratio</th>
+              <th data-sort="avgSalaryAfterGraduationUSD">Avg Salary After Graduation</th>
+              <th data-sort="year">Most Recent Year</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </section>
+      <section id="overviewCards" class="mobile-cards"></section>
+    </section>
+
+    <section id="devPanel" class="panel">
+      <section class="dev-section">
+        <article class="slider-card">
+          <div class="slider-grid">
+            <div class="slider-item">
+              <div class="slider-top"><span>Early Playing Time</span><span id="wPlayTimeVal">25</span></div>
+              <input id="wPlayTime" type="range" min="0" max="100" step="1" value="25" />
+            </div>
+            <div class="slider-item">
+              <div class="slider-top"><span>NFL Development</span><span id="wNflDevVal">25</span></div>
+              <input id="wNflDev" type="range" min="0" max="100" step="1" value="25" />
+            </div>
+            <div class="slider-item">
+              <div class="slider-top"><span>Winning Program</span><span id="wWinningVal">20</span></div>
+              <input id="wWinning" type="range" min="0" max="100" step="1" value="20" />
+            </div>
+            <div class="slider-item">
+              <div class="slider-top"><span>Academic Strength</span><span id="wAcademicVal">15</span></div>
+              <input id="wAcademic" type="range" min="0" max="100" step="1" value="15" />
+            </div>
+            <div class="slider-item">
+              <div class="slider-top"><span>Post-Grad Earnings</span><span id="wEarningsVal">10</span></div>
+              <input id="wEarnings" type="range" min="0" max="100" step="1" value="10" />
+            </div>
+            <div class="slider-item">
+              <div class="slider-top"><span>Campus Diversity</span><span id="wDiversityVal">5</span></div>
+              <input id="wDiversity" type="range" min="0" max="100" step="1" value="5" />
+            </div>
+          </div>
+          <div class="preset-row">
+            <div class="slider-item">
+              <div class="slider-top"><span>New Preset Name</span><span></span></div>
+              <input id="presetName" type="text" placeholder="Example: NFL-first" />
+            </div>
+            <div class="preset-actions">
+              <select id="presetSelect"></select>
+              <button id="savePresetBtn" type="button">Save Preset</button>
+              <button id="deletePresetBtn" type="button" class="btn-secondary">Delete</button>
+            </div>
+          </div>
+          <p id="presetStatus" class="preset-status"></p>
+          <p class="dev-summary" id="weightSummary"></p>
+        </article>
+
+        <section class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>School</th>
+                <th>Tailored Dev Score</th>
+                <th>Playing Time Proxy</th>
+                <th>NFL Dev Proxy</th>
+                <th>Winning Proxy</th>
+                <th>Academic Proxy</th>
+                <th>Earnings Proxy</th>
+                <th>Diversity Proxy</th>
+              </tr>
+            </thead>
+            <tbody id="devRows"></tbody>
+          </table>
+        </section>
+        <section id="devCards" class="mobile-cards"></section>
+      </section>
+    </section>
+
+    <p class="footnote">
+      Values are dashboard-ready estimates for quick comparison and can be refreshed from
+      <span class="mono">data/schools.json</span>. For final decisions, verify the latest values against
+      NCAA/official athletics records, university fact books, and the U.S. College Scorecard.
+    </p>
+  </main>
+
+  <script>
+    const dataUrl = "./data/schools.json";
+    const rowsEl = document.getElementById("rows");
+    const cardsEl = document.getElementById("summaryCards");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const autoRefreshEl = document.getElementById("autoRefresh");
+    const refreshStatusEl = document.getElementById("refreshStatus");
+    const conferenceFilterEl = document.getElementById("conferenceFilter");
+    const regionFilterEl = document.getElementById("regionFilter");
+    const selectivityFilterEl = document.getElementById("selectivityFilter");
+    const salaryFilterEl = document.getElementById("salaryFilter");
+    const salaryFilterValEl = document.getElementById("salaryFilterVal");
+    const fitFilterEl = document.getElementById("fitFilter");
+    const fitFilterValEl = document.getElementById("fitFilterVal");
+    const overviewTabBtn = document.getElementById("overviewTabBtn");
+    const devTabBtn = document.getElementById("devTabBtn");
+    const overviewPanel = document.getElementById("overviewPanel");
+    const devPanel = document.getElementById("devPanel");
+    const devRowsEl = document.getElementById("devRows");
+    const overviewCardsEl = document.getElementById("overviewCards");
+    const devCardsEl = document.getElementById("devCards");
+    const wPlayTimeEl = document.getElementById("wPlayTime");
+    const wNflDevEl = document.getElementById("wNflDev");
+    const wWinningEl = document.getElementById("wWinning");
+    const wAcademicEl = document.getElementById("wAcademic");
+    const wEarningsEl = document.getElementById("wEarnings");
+    const wDiversityEl = document.getElementById("wDiversity");
+    const wPlayTimeValEl = document.getElementById("wPlayTimeVal");
+    const wNflDevValEl = document.getElementById("wNflDevVal");
+    const wWinningValEl = document.getElementById("wWinningVal");
+    const wAcademicValEl = document.getElementById("wAcademicVal");
+    const wEarningsValEl = document.getElementById("wEarningsVal");
+    const wDiversityValEl = document.getElementById("wDiversityVal");
+    const weightSummaryEl = document.getElementById("weightSummary");
+    const presetNameEl = document.getElementById("presetName");
+    const presetSelectEl = document.getElementById("presetSelect");
+    const savePresetBtn = document.getElementById("savePresetBtn");
+    const deletePresetBtn = document.getElementById("deletePresetBtn");
+    const presetStatusEl = document.getElementById("presetStatus");
+
+    let schools = [];
+    let sortKey = "fitScore";
+    let sortAsc = false;
+    let timerId = null;
+    const PRESET_KEY = "tahjWeightPresetsV1";
+    let weightPresets = {};
+
+    function fmtNumber(n) {
+      return Number(n).toLocaleString("en-US");
+    }
+
+    function fmtMoney(n) {
+      return "$" + Number(n).toLocaleString("en-US");
+    }
+
+    function calcEthnicityCounts(ethnicityPct, population) {
+      const counts = {};
+      Object.entries(ethnicityPct).forEach(([group, pct]) => {
+        counts[group] = Math.round((pct / 100) * population);
+      });
+      return counts;
+    }
+
+    function nonWhiteDiversityPercent(ethnicityPct) {
+      return 100 - (ethnicityPct["White"] || 0);
+    }
+
+    function normalize(value, min, max) {
+      if (max === min) {
+        return 1;
+      }
+      return (value - min) / (max - min);
+    }
+
+    function selectivityScore(level) {
+      const map = {
+        "Very High": 95,
+        "High": 80,
+        "Moderate": 60,
+        "Broad": 45
+      };
+      return map[level] || 55;
+    }
+
+    function conferenceStrength(conf) {
+      if (conf === "ACC") {
+        return 95;
+      }
+      if (conf === "Ivy League") {
+        return 85;
+      }
+      if (conf === "Mountain West") {
+        return 70;
+      }
+      if (conf.includes("Big Sky")) {
+        return 55;
+      }
+      if (conf.includes("Big West")) {
+        return 50;
+      }
+      return 60;
+    }
+
+    function computeFitScores(data) {
+      const nflVals = data.map((s) => s.nflPlayers);
+      const salaryVals = data.map((s) => s.avgSalaryAfterGraduationUSD);
+      const diversityVals = data.map((s) => nonWhiteDiversityPercent(s.ethnicityPct));
+      const bowlVals = data.map((s) => s.bowlAppearances);
+      const confVals = data.map((s) => s.conferenceChampionships);
+
+      const bounds = {
+        nfl: [Math.min(...nflVals), Math.max(...nflVals)],
+        salary: [Math.min(...salaryVals), Math.max(...salaryVals)],
+        diversity: [Math.min(...diversityVals), Math.max(...diversityVals)],
+        bowls: [Math.min(...bowlVals), Math.max(...bowlVals)],
+        conf: [Math.min(...confVals), Math.max(...confVals)]
+      };
+
+      return data.map((school) => {
+        const nflNorm = normalize(school.nflPlayers, bounds.nfl[0], bounds.nfl[1]);
+        const salaryNorm = normalize(
+          school.avgSalaryAfterGraduationUSD,
+          bounds.salary[0],
+          bounds.salary[1]
+        );
+        const diversityNorm = normalize(
+          nonWhiteDiversityPercent(school.ethnicityPct),
+          bounds.diversity[0],
+          bounds.diversity[1]
+        );
+        const bowlNorm = normalize(
+          school.bowlAppearances,
+          bounds.bowls[0],
+          bounds.bowls[1]
+        );
+        const confNorm = normalize(
+          school.conferenceChampionships,
+          bounds.conf[0],
+          bounds.conf[1]
+        );
+
+        const fitScore =
+          100 * (
+            0.35 * nflNorm +
+            0.25 * salaryNorm +
+            0.15 * diversityNorm +
+            0.15 * bowlNorm +
+            0.10 * confNorm
+          );
+
+        return {
+          ...school,
+          fitScore: Math.round(fitScore),
+          blackStudentPct: Number(
+            school.blackStudentPctLatestYear ?? school.ethnicityPct["Black/African American"] ?? 0
+          ),
+          blackStudentCount: Number(
+            school.blackStudentCountLatestYear ??
+            Math.round((Number(school.ethnicityPct["Black/African American"] || 0) / 100) * school.undergradPopulation)
+          ),
+          undergradPopulationLatestYear: Number(
+            school.undergradPopulationLatestYear ?? school.undergradPopulation
+          ),
+          preMedAcceptancePct: Number(school.preMedAcceptancePct ?? 0)
+        };
+      });
+    }
+
+    function updateFilterLabels() {
+      salaryFilterValEl.textContent = `${fmtMoney(salaryFilterEl.value)}+`;
+      fitFilterValEl.textContent = `${fitFilterEl.value}+`;
+    }
+
+    function setupSalaryBounds(data) {
+      if (!data.length) {
+        return;
+      }
+
+      const maxSalaryData = Math.max(...data.map((s) => s.avgSalaryAfterGraduationUSD));
+      const currentSalary = Number(salaryFilterEl.value || 0);
+
+      salaryFilterEl.min = "0";
+      salaryFilterEl.max = String(Math.ceil(maxSalaryData / 1000) * 1000);
+      salaryFilterEl.value = String(Math.max(0, Math.min(currentSalary, Number(salaryFilterEl.max))));
+      updateFilterLabels();
+    }
+
+    function fitColor(score) {
+      if (score >= 80) {
+        return "#9ad9b9";
+      }
+      if (score >= 60) {
+        return "#f7dd8d";
+      }
+      return "#f5b3a2";
+    }
+
+    function scoreLabel(score) {
+      if (score >= 80) {
+        return "High";
+      }
+      if (score >= 60) {
+        return "Medium";
+      }
+      return "Developing";
+    }
+
+    function weightValues() {
+      return {
+        playTime: Number(wPlayTimeEl.value),
+        nflDev: Number(wNflDevEl.value),
+        winning: Number(wWinningEl.value),
+        academic: Number(wAcademicEl.value),
+        earnings: Number(wEarningsEl.value),
+        diversity: Number(wDiversityEl.value)
+      };
+    }
+
+    function setWeightValues(weights) {
+      wPlayTimeEl.value = String(weights.playTime ?? 25);
+      wNflDevEl.value = String(weights.nflDev ?? 25);
+      wWinningEl.value = String(weights.winning ?? 20);
+      wAcademicEl.value = String(weights.academic ?? 15);
+      wEarningsEl.value = String(weights.earnings ?? 10);
+      wDiversityEl.value = String(weights.diversity ?? 5);
+      updateWeightLabels();
+    }
+
+    function loadPresetsFromStorage() {
+      try {
+        const raw = localStorage.getItem(PRESET_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (_err) {
+        return {};
+      }
+    }
+
+    function savePresetsToStorage() {
+      localStorage.setItem(PRESET_KEY, JSON.stringify(weightPresets));
+    }
+
+    function seedDefaultPresets() {
+      if (Object.keys(weightPresets).length > 0) {
+        return;
+      }
+
+      weightPresets = {
+        "Balanced": { playTime: 25, nflDev: 25, winning: 20, academic: 15, earnings: 10, diversity: 5 },
+        "NFL-first": { playTime: 12, nflDev: 45, winning: 20, academic: 8, earnings: 10, diversity: 5 },
+        "Early-playing-time-first": { playTime: 45, nflDev: 20, winning: 15, academic: 8, earnings: 7, diversity: 5 }
+      };
+      savePresetsToStorage();
+    }
+
+    function populatePresetSelect(selectedName) {
+      const names = Object.keys(weightPresets).sort((a, b) => a.localeCompare(b));
+      const activeName = selectedName && names.includes(selectedName) ? selectedName : names[0];
+
+      presetSelectEl.innerHTML = names.length
+        ? names.map((name) => `<option value="${name}">${name}</option>`).join("")
+        : `<option value="">No presets yet</option>`;
+
+      if (names.length) {
+        presetSelectEl.value = activeName;
+      }
+    }
+
+    function showPresetStatus(message) {
+      presetStatusEl.textContent = message;
+    }
+
+    function applyPreset(name) {
+      const preset = weightPresets[name];
+      if (!preset) {
+        return;
+      }
+
+      setWeightValues(preset);
+      renderAll();
+      showPresetStatus(`Applied preset: ${name}`);
+    }
+
+    function saveCurrentPreset() {
+      const name = presetNameEl.value.trim();
+      if (!name) {
+        showPresetStatus("Enter a preset name before saving.");
+        return;
+      }
+
+      weightPresets[name] = weightValues();
+      savePresetsToStorage();
+      populatePresetSelect(name);
+      presetNameEl.value = "";
+      showPresetStatus(`Saved preset: ${name}`);
+    }
+
+    function deleteSelectedPreset() {
+      const name = presetSelectEl.value;
+      if (!name || !weightPresets[name]) {
+        showPresetStatus("Select a preset to delete.");
+        return;
+      }
+
+      delete weightPresets[name];
+      savePresetsToStorage();
+      populatePresetSelect();
+      const remaining = presetSelectEl.value;
+      if (remaining && weightPresets[remaining]) {
+        applyPreset(remaining);
+      }
+      showPresetStatus(`Deleted preset: ${name}`);
+    }
+
+    function initPresets() {
+      weightPresets = loadPresetsFromStorage();
+      seedDefaultPresets();
+      populatePresetSelect();
+
+      const initial = presetSelectEl.value;
+      if (initial && weightPresets[initial]) {
+        setWeightValues(weightPresets[initial]);
+      }
+      showPresetStatus("Choose a preset to switch instantly, or save your own.");
+    }
+
+    function updateWeightLabels() {
+      wPlayTimeValEl.textContent = wPlayTimeEl.value;
+      wNflDevValEl.textContent = wNflDevEl.value;
+      wWinningValEl.textContent = wWinningEl.value;
+      wAcademicValEl.textContent = wAcademicEl.value;
+      wEarningsValEl.textContent = wEarningsEl.value;
+      wDiversityValEl.textContent = wDiversityEl.value;
+
+      const w = weightValues();
+      const total = w.playTime + w.nflDev + w.winning + w.academic + w.earnings + w.diversity;
+      weightSummaryEl.textContent =
+        `Weight total: ${total}. Scores normalize automatically, so any mix works.`;
+    }
+
+    function computeDevelopmentScores(data) {
+      if (!data.length) {
+        return [];
+      }
+
+      const playTimeRaw = data.map((s) =>
+        0.65 * (1 - normalize(s.undergradPopulation, Math.min(...data.map((x) => x.undergradPopulation)), Math.max(...data.map((x) => x.undergradPopulation)))) +
+        0.35 * (1 - normalize(conferenceStrength(s.conference), Math.min(...data.map((x) => conferenceStrength(x.conference))), Math.max(...data.map((x) => conferenceStrength(x.conference)))))
+      );
+      const nflRaw = data.map((s) => s.nflPlayers);
+      const winningRaw = data.map((s) => (0.5 * s.bowlAppearances) + (0.3 * s.conferenceChampionships) + (0.2 * s.nationalChampionships));
+      const academicRaw = data.map((s) => selectivityScore(s.academicSelectivity));
+      const earningsRaw = data.map((s) => s.avgSalaryAfterGraduationUSD);
+      const diversityRaw = data.map((s) => nonWhiteDiversityPercent(s.ethnicityPct));
+
+      const playBounds = [Math.min(...playTimeRaw), Math.max(...playTimeRaw)];
+      const nflBounds = [Math.min(...nflRaw), Math.max(...nflRaw)];
+      const winBounds = [Math.min(...winningRaw), Math.max(...winningRaw)];
+      const academicBounds = [Math.min(...academicRaw), Math.max(...academicRaw)];
+      const earningsBounds = [Math.min(...earningsRaw), Math.max(...earningsRaw)];
+      const diversityBounds = [Math.min(...diversityRaw), Math.max(...diversityRaw)];
+
+      const w = weightValues();
+      const wTotal = w.playTime + w.nflDev + w.winning + w.academic + w.earnings + w.diversity || 1;
+
+      return data.map((school, idx) => {
+        const playNorm = normalize(playTimeRaw[idx], playBounds[0], playBounds[1]);
+        const nflNorm = normalize(nflRaw[idx], nflBounds[0], nflBounds[1]);
+        const winNorm = normalize(winningRaw[idx], winBounds[0], winBounds[1]);
+        const academicNorm = normalize(academicRaw[idx], academicBounds[0], academicBounds[1]);
+        const earningsNorm = normalize(earningsRaw[idx], earningsBounds[0], earningsBounds[1]);
+        const diversityNorm = normalize(diversityRaw[idx], diversityBounds[0], diversityBounds[1]);
+
+        const score = 100 * (
+          (w.playTime / wTotal) * playNorm +
+          (w.nflDev / wTotal) * nflNorm +
+          (w.winning / wTotal) * winNorm +
+          (w.academic / wTotal) * academicNorm +
+          (w.earnings / wTotal) * earningsNorm +
+          (w.diversity / wTotal) * diversityNorm
+        );
+
+        return {
+          school: school.school,
+          score: Math.round(score),
+          play: Math.round(playNorm * 100),
+          nfl: Math.round(nflNorm * 100),
+          win: Math.round(winNorm * 100),
+          academic: Math.round(academicNorm * 100),
+          earnings: Math.round(earningsNorm * 100),
+          diversity: Math.round(diversityNorm * 100)
+        };
+      }).sort((a, b) => b.score - a.score);
+    }
+
+    function renderDevelopmentTable(data) {
+      const ranked = computeDevelopmentScores(data);
+
+      if (!ranked.length) {
+        devRowsEl.innerHTML = `<tr><td colspan="9">No schools match current filters.</td></tr>`;
+        devCardsEl.innerHTML = `<article class="mobile-card"><div class="mobile-title">No schools match current filters.</div></article>`;
+        return;
+      }
+
+      devRowsEl.innerHTML = ranked.map((row, i) => `
+        <tr>
+          <td class="mono">${i + 1}</td>
+          <td><strong>${row.school}</strong></td>
+          <td class="mono"><span class="score-chip" style="background:${fitColor(row.score)}">${row.score}</span></td>
+          <td class="mono">${row.play}</td>
+          <td class="mono">${row.nfl}</td>
+          <td class="mono">${row.win}</td>
+          <td class="mono">${row.academic}</td>
+          <td class="mono">${row.earnings}</td>
+          <td class="mono">${row.diversity}</td>
+        </tr>
+      `).join("");
+
+      devCardsEl.innerHTML = ranked
+        .map((row, i) => `
+          <article class="mobile-card">
+            <div class="mobile-title">#${i + 1} ${row.school}</div>
+            <div class="mobile-row">Tailored Dev Score: ${row.score}</div>
+            <div class="mobile-row">Play ${row.play} | NFL ${row.nfl} | Win ${row.win}</div>
+            <div class="mobile-row">Academic ${row.academic} | Earnings ${row.earnings} | Diversity ${row.diversity}</div>
+          </article>
+        `)
+        .join("");
+    }
+
+    function renderSummary(data) {
+      if (!data.length) {
+        cardsEl.innerHTML = "";
+        return;
+      }
+
+      const schoolCount = data.length;
+      const totalUndergrads = data.reduce((sum, s) => sum + s.undergradPopulationLatestYear, 0);
+      const bestFit = [...data].sort((a, b) => b.fitScore - a.fitScore)[0];
+      const avgSalary = Math.round(
+        data.reduce((sum, s) => sum + s.avgSalaryAfterGraduationUSD, 0) / schoolCount
+      );
+
+      cardsEl.innerHTML = `
+        <article class="card">
+          <div class="label">Schools Matching Filters</div>
+          <div class="value mono">${fmtNumber(schoolCount)}</div>
+        </article>
+        <article class="card">
+          <div class="label">Combined Undergrads</div>
+          <div class="value mono">${fmtNumber(totalUndergrads)}</div>
+        </article>
+        <article class="card">
+          <div class="label">Top Overall Fit</div>
+          <div class="value">${bestFit.school} (${bestFit.fitScore})</div>
+        </article>
+        <article class="card">
+          <div class="label">Avg Salary Across Visible Schools</div>
+          <div class="value mono">${fmtMoney(avgSalary)}</div>
+        </article>
+      `;
+    }
+
+    function populateFilterSelect(selectEl, values) {
+      const options = ["All", ...values];
+      selectEl.innerHTML = options
+        .map((value) => `<option value="${value}">${value}</option>`)
+        .join("");
+    }
+
+    function setupFilters(data) {
+      const prevConference = conferenceFilterEl.value || "All";
+      const prevRegion = regionFilterEl.value || "All";
+      const prevSelectivity = selectivityFilterEl.value || "All";
+
+      populateFilterSelect(
+        conferenceFilterEl,
+        [...new Set(data.map((s) => s.conference))].sort((a, b) => a.localeCompare(b))
+      );
+      populateFilterSelect(
+        regionFilterEl,
+        [...new Set(data.map((s) => s.region))].sort((a, b) => a.localeCompare(b))
+      );
+      populateFilterSelect(
+        selectivityFilterEl,
+        [...new Set(data.map((s) => s.academicSelectivity))].sort((a, b) => a.localeCompare(b))
+      );
+
+      conferenceFilterEl.value = [...conferenceFilterEl.options].some((o) => o.value === prevConference)
+        ? prevConference
+        : "All";
+      regionFilterEl.value = [...regionFilterEl.options].some((o) => o.value === prevRegion)
+        ? prevRegion
+        : "All";
+      selectivityFilterEl.value = [...selectivityFilterEl.options].some((o) => o.value === prevSelectivity)
+        ? prevSelectivity
+        : "All";
+    }
+
+    function currentFilteredData() {
+      const conferenceVal = conferenceFilterEl.value;
+      const regionVal = regionFilterEl.value;
+      const selectivityVal = selectivityFilterEl.value;
+      const minSalary = Number(salaryFilterEl.value || 0);
+      const minFit = Number(fitFilterEl.value || 0);
+
+      return schools.filter((school) => {
+        if (conferenceVal !== "All" && school.conference !== conferenceVal) {
+          return false;
+        }
+        if (regionVal !== "All" && school.region !== regionVal) {
+          return false;
+        }
+        if (selectivityVal !== "All" && school.academicSelectivity !== selectivityVal) {
+          return false;
+        }
+        if (school.avgSalaryAfterGraduationUSD < minSalary) {
+          return false;
+        }
+        if (school.fitScore < minFit) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    function ethnicBlockCounts(ethnicityCounts) {
+      return Object.entries(ethnicityCounts)
+        .map(([group, count]) => `${group}: ${fmtNumber(count)}`)
+        .join("<br>");
+    }
+
+    function ethnicBlockPct(ethnicityPct) {
+      return Object.entries(ethnicityPct)
+        .map(([group, pct]) => `${group}: ${pct.toFixed(1)}%`)
+        .join("<br>");
+    }
+
+    function ratioValue(school) {
+      return `${school.malePct.toFixed(1)}:${school.femalePct.toFixed(1)}`;
+    }
+
+    function sortData(data) {
+      return [...data].sort((a, b) => {
+        let left;
+        let right;
+
+        if (sortKey === "ratio") {
+          left = a.malePct / a.femalePct;
+          right = b.malePct / b.femalePct;
+        } else {
+          left = a[sortKey];
+          right = b[sortKey];
+        }
+
+        if (typeof left === "string") {
+          const cmp = left.localeCompare(right);
+          return sortAsc ? cmp : -cmp;
+        }
+
+        return sortAsc ? left - right : right - left;
+      });
+    }
+
+    function renderTable(data) {
+      const sorted = sortData(data);
+      rowsEl.innerHTML = sorted
+        .map((school) => {
+          const ethnicityCounts = calcEthnicityCounts(
+            school.ethnicityPct,
+            school.undergradPopulation
+          );
+          const diversityNoWhite = nonWhiteDiversityPercent(school.ethnicityPct);
+
+          return `
+            <tr>
+              <td class="mono">
+                <span class="score-chip" style="background:${fitColor(school.fitScore)}">
+                  ${school.fitScore} (${scoreLabel(school.fitScore)})
+                </span>
+              </td>
+              <td>
+                <strong>${school.school}</strong><br>
+                <span class="chip">Non-White Diversity: ${diversityNoWhite.toFixed(1)}%</span>
+              </td>
+              <td>${school.conference}</td>
+              <td>${school.region}</td>
+              <td>${school.academicSelectivity}</td>
+              <td class="mono">${fmtNumber(school.nflPlayers)}</td>
+              <td class="mono">${fmtNumber(school.bowlAppearances)}</td>
+              <td class="mono">${fmtNumber(school.conferenceChampionships)}</td>
+              <td class="mono">${fmtNumber(school.nationalChampionships)}</td>
+              <td class="mono">${fmtNumber(school.blackStudentCount)}</td>
+              <td class="mono">${school.blackStudentPct.toFixed(1)}%</td>
+              <td class="mono">${school.preMedAcceptancePct.toFixed(1)}%</td>
+              <td class="mini mono">${ethnicBlockCounts(ethnicityCounts)}</td>
+              <td class="mini mono">${ethnicBlockPct(school.ethnicityPct)}</td>
+              <td class="mono">${fmtNumber(school.undergradPopulationLatestYear)}</td>
+              <td class="mono ratio">${ratioValue(school)}</td>
+              <td class="mono">${fmtMoney(school.avgSalaryAfterGraduationUSD)}</td>
+              <td class="mono">${school.year}</td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      overviewCardsEl.innerHTML = sorted
+        .map((school) => `
+          <article class="mobile-card">
+            <div class="mobile-title">${school.school}</div>
+            <div class="mobile-row">Fit: ${school.fitScore} | Salary: ${fmtMoney(school.avgSalaryAfterGraduationUSD)}</div>
+            <div class="mobile-row">Black Students: ${fmtNumber(school.blackStudentCount)} (${school.blackStudentPct.toFixed(1)}%)</div>
+            <div class="mobile-row">Pre-Med Acceptance: ${school.preMedAcceptancePct.toFixed(1)}%</div>
+            <div class="mobile-row">Undergrad (Latest): ${fmtNumber(school.undergradPopulationLatestYear)} | Year: ${school.year}</div>
+          </article>
+        `)
+        .join("");
+    }
+
+    function renderAll() {
+      const filtered = currentFilteredData();
+      renderSummary(filtered);
+      renderTable(filtered);
+      renderDevelopmentTable(filtered);
+    }
+
+    async function loadData() {
+      const cacheBust = `t=${Date.now()}`;
+      refreshStatusEl.textContent = "Refreshing...";
+
+      try {
+        const response = await fetch(`${dataUrl}?${cacheBust}`, {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(`Unable to load data (${response.status})`);
+        }
+
+        const rawSchools = await response.json();
+        schools = computeFitScores(rawSchools);
+        setupFilters(schools);
+        setupSalaryBounds(schools);
+        updateFilterLabels();
+        renderAll();
+
+        const stamp = new Date();
+        refreshStatusEl.textContent = `Last refreshed: ${stamp.toLocaleTimeString()}`;
+      } catch (err) {
+        refreshStatusEl.textContent = "Refresh failed. Open with a local web server for live JSON refresh.";
+        console.error(err);
+      }
+    }
+
+    function bindSort() {
+      document.querySelectorAll("th[data-sort]").forEach((th) => {
+        th.addEventListener("click", () => {
+          const newKey = th.getAttribute("data-sort");
+          if (sortKey === newKey) {
+            sortAsc = !sortAsc;
+          } else {
+            sortKey = newKey;
+            sortAsc = true;
+          }
+          renderAll();
+        });
+      });
+    }
+
+    function bindControls() {
+      refreshBtn.addEventListener("click", loadData);
+
+      autoRefreshEl.addEventListener("change", (e) => {
+        if (e.target.checked) {
+          timerId = setInterval(loadData, 60000);
+        } else if (timerId) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+      });
+
+      [conferenceFilterEl, regionFilterEl, selectivityFilterEl, salaryFilterEl].forEach((el) => {
+        el.addEventListener("input", () => {
+          updateFilterLabels();
+          renderAll();
+        });
+        el.addEventListener("change", () => {
+          updateFilterLabels();
+          renderAll();
+        });
+      });
+
+      fitFilterEl.addEventListener("input", () => {
+        updateFilterLabels();
+        renderAll();
+      });
+      fitFilterEl.addEventListener("change", () => {
+        updateFilterLabels();
+        renderAll();
+      });
+
+      [wPlayTimeEl, wNflDevEl, wWinningEl, wAcademicEl, wEarningsEl, wDiversityEl].forEach((el) => {
+        el.addEventListener("input", () => {
+          updateWeightLabels();
+          renderAll();
+        });
+      });
+
+      savePresetBtn.addEventListener("click", saveCurrentPreset);
+      deletePresetBtn.addEventListener("click", deleteSelectedPreset);
+      presetSelectEl.addEventListener("change", () => {
+        const selected = presetSelectEl.value;
+        if (selected && weightPresets[selected]) {
+          applyPreset(selected);
+        }
+      });
+      presetNameEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          saveCurrentPreset();
+        }
+      });
+
+      overviewTabBtn.addEventListener("click", () => {
+        overviewTabBtn.classList.add("active");
+        devTabBtn.classList.remove("active");
+        overviewPanel.classList.add("active");
+        devPanel.classList.remove("active");
+      });
+
+      devTabBtn.addEventListener("click", () => {
+        devTabBtn.classList.add("active");
+        overviewTabBtn.classList.remove("active");
+        devPanel.classList.add("active");
+        overviewPanel.classList.remove("active");
+      });
+    }
+
+    bindSort();
+    bindControls();
+    initPresets();
+    updateWeightLabels();
+    updateFilterLabels();
+    loadData();
+  </script>
+</body>
+</html>

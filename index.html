@@ -216,7 +216,7 @@
     .cards {
       margin-top: 18px;
       display: grid;
-      grid-template-columns: repeat(3, minmax(130px, 1fr));
+      grid-template-columns: repeat(2, minmax(130px, 1fr));
       gap: 12px;
     }
 
@@ -762,7 +762,7 @@
               <th data-sort="conferenceChampionships">Conference Titles (Football)</th>
               <th data-sort="nationalChampionships">National Titles (Football)</th>
               <th>Ethnic Diversity (Count)</th>
-              <th>Ethnic Diversity (%)</th>
+              <th>Largest Student Groups (#)</th>
               <th data-sort="year">Most Recent Year</th>
             </tr>
           </thead>
@@ -1311,17 +1311,12 @@
       }
 
       const schoolCount = data.length;
-      const totalUndergrads = data.reduce((sum, s) => sum + s.undergradPopulationLatestYear, 0);
       const bestFit = [...data].sort((a, b) => b.fitScore - a.fitScore)[0];
 
       cardsEl.innerHTML = `
         <article class="card">
           <div class="label">Schools Matching Filters</div>
           <div class="value mono">${fmtNumber(schoolCount)}</div>
-        </article>
-        <article class="card">
-          <div class="label">Combined Undergrads</div>
-          <div class="value mono">${fmtNumber(totalUndergrads)}</div>
         </article>
         <article class="card">
           <div class="label">Top Overall Fit</div>
@@ -1391,9 +1386,11 @@
         .join("<br>");
     }
 
-    function ethnicBlockPct(ethnicityPct) {
-      return Object.entries(ethnicityPct)
-        .map(([group, pct]) => `${group}: ${pct.toFixed(1)}%`)
+    function topEthnicityCounts(ethnicityCounts, limit = 3) {
+      return Object.entries(ethnicityCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, limit)
+        .map(([group, count]) => `${group}: ${fmtNumber(count)}`)
         .join("<br>");
     }
 
@@ -1458,7 +1455,7 @@
               <td class="mono">${fmtNumber(school.conferenceChampionships)}</td>
               <td class="mono">${fmtNumber(school.nationalChampionships)}</td>
               <td class="mini mono">${ethnicBlockCounts(ethnicityCounts)}</td>
-              <td class="mini mono">${ethnicBlockPct(school.ethnicityPct)}</td>
+              <td class="mini mono">${topEthnicityCounts(ethnicityCounts, 3)}</td>
               <td class="mono">${school.year}</td>
             </tr>
           `;
@@ -1498,8 +1495,7 @@
               <div class="mobile-section-title">Campus Diversity</div>
               <div class="mobile-row"><strong>Black Students:</strong> ${fmtNumber(school.blackStudentCount)} (${school.blackStudentPct.toFixed(1)}%)</div>
               <div class="mobile-row"><strong>Non-White Diversity:</strong> ${diversityNoWhite.toFixed(1)}%</div>
-              <div class="mobile-row"><strong>Ethnicity Count Breakdown:</strong><br>${ethnicBlockCounts(ethnicityCounts)}</div>
-              <div class="mobile-row"><strong>Ethnicity Percent Breakdown:</strong><br>${ethnicBlockPct(school.ethnicityPct)}</div>
+              <div class="mobile-row"><strong>Largest Student Groups (#):</strong><br>${topEthnicityCounts(ethnicityCounts, 3)}</div>
             </article>
           `;
         })
@@ -1635,8 +1631,8 @@
     galleryLoading.textContent = "Loading visit photos...";
     document.querySelector(".photo-gallery").appendChild(galleryLoading);
 
-    // List of photos from the Photos of Visits folder (all converted to JPG for web compatibility)
-    const photoList = [
+    // Source photos from visit folder; carousel keeps portrait-oriented images.
+    const allPhotoList = [
       "IMG_1617.jpg", "IMG_1620.jpg", "IMG_1646.jpg", "IMG_1651.jpg",
       "IMG_1674.jpg", "IMG_1693.jpg", "IMG_1711.jpg", "IMG_1750.jpg",
       "IMG_1777.jpg", "IMG_1780.jpg", "IMG_1791.jpg", "IMG_1820.jpg",
@@ -1646,6 +1642,7 @@
       "IMG_4338.jpg", "IMG_4343.jpg", "IMG_4346.jpg", "IMG_4360.jpg",
       "IMG_4365.jpg", "IMG_4368.jpg"
     ];
+    let photoList = [];
 
     let galleryIndex = 0;
     let gallerySlides = [];
@@ -1683,9 +1680,9 @@
 
     function preloadGalleryImages() {
       return Promise.allSettled(
-        photoList.map((photo) => new Promise((resolve, reject) => {
+        allPhotoList.map((photo) => new Promise((resolve, reject) => {
           const img = new Image();
-          img.onload = resolve;
+          img.onload = () => resolve({ photo, w: img.naturalWidth, h: img.naturalHeight });
           img.onerror = reject;
           img.src = `./photos/${photo}`;
         }))
@@ -1693,11 +1690,21 @@
     }
 
     async function initGallery() {
-      if (photoList.length === 0) return;
+      if (allPhotoList.length === 0) return;
 
       if (!galleryImagesReady) {
         galleryLoading.style.display = "flex";
-        await preloadGalleryImages();
+        const loaded = await preloadGalleryImages();
+        const successful = loaded
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value);
+
+        const portraitOnly = successful
+          .filter((meta) => meta.h >= meta.w)
+          .map((meta) => meta.photo);
+
+        // Fallback keeps gallery working even when metadata reports inconsistent orientation.
+        photoList = portraitOnly.length ? portraitOnly : successful.map((meta) => meta.photo);
         galleryImagesReady = true;
         galleryLoading.style.display = "none";
       }
